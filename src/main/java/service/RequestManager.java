@@ -23,6 +23,8 @@ public class RequestManager {
     String cacheTimestampPattern = "uuMMddHHmm";
     Integer cacheTTLMins = 1440;
     Timer timer;
+    String defaultUser = "*";
+    String defaultSource = "*";
 
     public RequestManager(){
         enableCleanup();
@@ -159,6 +161,8 @@ public class RequestManager {
 
     public List getUserRequestLabels(String user, String source) {
         List<String> userRequestNames = null;
+        if (user == null) user = defaultUser;
+        if (source == null) source = defaultSource;
         if (labelledRequestHistory.containsKey(source) && labelledRequestHistory.get(source).containsKey(user)) {
             List<Request> requests = labelledRequestHistory.get(source).get(user);
             if (requests != null && requests.size()>0) {

@@ -141,6 +141,7 @@ class RequestManagerTestIT {
     @Test
     void testLabeledRequests() throws ConfigurationException, JsonProcessingException {
         GrafanaSchedulerController controller = new GrafanaSchedulerController();
+
         String submit_query = "{\n" +
                 "\t\"user\": \"write_user\",\n" +
                 "\t\"source\":\"source0\",\n" +

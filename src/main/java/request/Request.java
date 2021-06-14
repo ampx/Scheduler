@@ -2,10 +2,16 @@ package request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import logic.RequestDeserializer;
+import logic.RequestSerializer;
 import util.time.model.Time;
 
 import java.util.HashMap;
 
+@JsonDeserialize(using = RequestDeserializer.class)
+@JsonSerialize(using = RequestSerializer.class)
 public class Request {
 
     public Request(Type type){
@@ -146,6 +152,10 @@ public class Request {
             return true;
         }
         return false;
+    }
+
+    public String getTypeString() {
+        return type.name();
     }
 
     public void complete() {
