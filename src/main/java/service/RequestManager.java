@@ -241,6 +241,10 @@ public class RequestManager {
         return null;
     }
 
+    public Set<String> getJobList() {
+        return jobManager.getJobList();
+    }
+
     public String createCacheTableName(Time timestamp, String name) {
         Integer maxTableLength = 64;
         name = name.replace(".", "_");

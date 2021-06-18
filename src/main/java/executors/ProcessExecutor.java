@@ -3,28 +3,32 @@ package executors;
 import util.table.model.Table;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ProcessExecutor extends JobExecutor {
-    String process;
-    protected String argDeliminator;
-    protected String argEquality;
+    private String process;
+    private String argEquality="=";
+    private Set argSet = new HashSet();
+    private String homeDir = null;
+    private String[] envVars = null;
 
     public ProcessExecutor(HashMap<String, Object> config) {
         super(config);
-        if (config.containsKey("argDelim")) setArgDeliminator((String) config.get("argDelim"));
-        else setArgDeliminator("&");
-        if (config.containsKey("argEquality")) setArgEquality((String) config.get("argEquality"));
-        else setArgEquality("=");
         if (config.containsKey("process")) {
             this.process = (String) config.get("process");
         }
-    }
-
-    public void setArgDeliminator(String argDeliminator) {
-        this.argDeliminator = argDeliminator;
+        if (config.containsKey("homeDir")) {
+            this.homeDir = (String) config.get("homeDir");
+        }
+        if (config.containsKey("envVars")) {
+            ArrayList varsList = (ArrayList) config.get("envVars");
+            envVars = (String[]) varsList.toArray(new String[varsList.size()]);
+        }
+        if (config.containsKey("argSet")) {
+            argSet.addAll((ArrayList) config.get("argSet"));
+        }
     }
 
     public void setArgEquality(String argEquality) {
@@ -36,7 +40,11 @@ public class ProcessExecutor extends JobExecutor {
         Process p;
         Table outputTable = null;
         try {
-            p = Runtime.getRuntime().exec(new String[]{"bash", "-c", processArgAppender(arguments)});
+            if (homeDir != null) {
+                p = Runtime.getRuntime().exec(cmdAppender(arguments), envVars, new File(homeDir));
+            } else {
+                p = Runtime.getRuntime().exec(cmdAppender(arguments), envVars);
+            }
             if (captureOutput) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 String s;
@@ -56,28 +64,37 @@ public class ProcessExecutor extends JobExecutor {
         return outputTable;
     }
 
-    public String processArgAppender(HashMap<Object, Object> arguments) {
-        String processWithArgs = process;
-        String argumentsStr = null;
+    public String[] cmdAppender(HashMap<Object, Object> arguments) {
+        List<String> processList = new ArrayList<>();
+        processList.add(process);
         if (arguments != null) {
             for (Map.Entry<Object, Object> entry : arguments.entrySet()) {
-                if (argumentsStr == null) {
-                    argumentsStr = entry.getKey().toString();
-                } else {
-                    argumentsStr += argDeliminator + entry.getKey();
-                }
-                if (entry.getValue() != null) {
-                    argumentsStr += argEquality + entry.getValue();
+                if (argSet.contains(entry.getKey())){
+                    String arg = entry.getKey() + argEquality + entry.getValue();
+                    processList.add(arg);
                 }
             }
-        } else {
-            argumentsStr = "";
         }
-        if (process.contains("__$args")) {
-            processWithArgs = process.replace("__$args", argumentsStr);
-        } else {
-            processWithArgs = process.concat(" " + argumentsStr);
-        }
-        return processWithArgs;
+        return processList.toArray(new String[processList.size()]);
+    }
+
+    public String getProcess() {
+        return process;
+    }
+
+    public String getArgEquality() {
+        return argEquality;
+    }
+
+    public Set getArgSet() {
+        return argSet;
+    }
+
+    public String getHomeDir() {
+        return homeDir;
+    }
+
+    public String[] getEnvVars() {
+        return envVars;
     }
 }

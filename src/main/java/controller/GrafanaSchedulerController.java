@@ -3,6 +3,7 @@ package controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import config.ObjectFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import request.Request;
@@ -16,20 +17,8 @@ import java.util.*;
 @RestController
 public class GrafanaSchedulerController {
 
-    String emptyResponse = TableUtil.getEmptyTable().toString();
-    ObjectFactory objectFactory;
+    @Autowired
     RequestManager requestManager;
-
-    public GrafanaSchedulerController(){
-        try {
-            objectFactory = new ObjectFactory(null);
-            this.requestManager = objectFactory.getRequestManager();
-        } catch (ConfigurationException e) {
-            System.out.println("failed to setup, check your config file");
-            System.out.println(e);
-        }
-
-    }
 
     @PostMapping("/api/v2/query")
     public List<Table> query(@RequestBody Request request) {
@@ -59,7 +48,7 @@ public class GrafanaSchedulerController {
             if (target != null) {
                 return requestManager.getUserRequestLabels((String)target.get("user"), (String)target.get("source"));
             } else if (target.equals("")) {
-                return objectFactory.getJobManager().getJobList();
+                return requestManager.getJobList();
             }
         }
         return new ArrayList<>();

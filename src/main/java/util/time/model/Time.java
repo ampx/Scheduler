@@ -100,6 +100,10 @@ public class Time{
         return new Time(this.time.truncatedTo(ChronoUnit.SECONDS));
     }
 
+    public Time toMillisStart(){
+        return new Time(this.time.truncatedTo(ChronoUnit.MILLIS));
+    }
+
     public Time toDayStart(){
         return new Time(this.time.truncatedTo(ChronoUnit.DAYS));
     }

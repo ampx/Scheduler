@@ -1,5 +1,6 @@
 package service;
 
+import executors.DummyExecutor;
 import executors.JobExecutor;
 import executors.ProcessExecutor;
 import executors.UriJobExecutor;
@@ -7,6 +8,11 @@ import executors.UriJobExecutor;
 import java.util.*;
 
 public class JobManager {
+
+    public JobManager() {
+        jobs.put("test", new DummyExecutor(new HashMap<>()));
+    }
+
     HashMap<String, JobExecutor> jobs = new HashMap<>();
 
     public void setExternalJobManager(JobManager externalJobManager) {
@@ -15,18 +21,26 @@ public class JobManager {
 
     JobManager externalJobManager;
 
-    public JobExecutor addJob(String executorName, HashMap<String, Object> config){
-        JobExecutor jobExecutor = null;
-        if (externalJobManager != null) {
-            jobExecutor = externalJobManager.addJob(executorName, config);
-        }
-        if (config.get("type").equals("get")) {
-            jobExecutor = new UriJobExecutor(config);
-        } else if (config.get("type").equals("process")) {
-            jobExecutor = new ProcessExecutor(config);
-        }
+    public boolean addJob(String executorName, String type, HashMap<String, Object> config){
+        JobExecutor jobExecutor = createExecutor(type, config);
         if (jobExecutor != null) {
             jobs.put(executorName, jobExecutor);
+            return true;
+        }
+        return false;
+    }
+
+    public JobExecutor createExecutor(String type, HashMap<String, Object> config) {
+        JobExecutor jobExecutor = null;
+        if (externalJobManager != null) {
+            jobExecutor = externalJobManager.createExecutor(type, config);
+        }
+        if (jobExecutor == null) {
+            if (type.equals("get")) {
+                jobExecutor = new UriJobExecutor(config);
+            } else if (type.equals("process")) {
+                jobExecutor = new ProcessExecutor(config);
+            }
         }
         return jobExecutor;
     }
