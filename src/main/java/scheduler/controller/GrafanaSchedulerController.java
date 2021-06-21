@@ -17,13 +17,11 @@ public class GrafanaSchedulerController {
 
     @Autowired
     RequestManager requestManager;
-    Integer counter = 0;
 
-    @PostMapping("/api/v2/query")
+    @PostMapping("/scheduler/query")
     public List<Table> query(@RequestBody Request request) {
         List<Table> tables = null;
         if (request != null) {
-            counter++;
             tables = new ArrayList<>();
             Table table = null;
             if (request.isGetRequest()) {
@@ -40,7 +38,7 @@ public class GrafanaSchedulerController {
         return tables;
     }
 
-    @PostMapping("/api/v2/search")
+    @PostMapping("/scheduler/search")
     public Iterable<String> search(@RequestBody Search search) {
         if (search != null) {
             if (search.getUser() != null && search.getSource() != null) {
@@ -54,7 +52,7 @@ public class GrafanaSchedulerController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/api/v2")
+    @GetMapping("/scheduler")
     public String healthCheck() {
         return "LakeTools Grafana Backend";
     }

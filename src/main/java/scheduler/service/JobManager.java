@@ -1,19 +1,16 @@
 package scheduler.service;
 
-import scheduler.executors.DummyExecutor;
-import scheduler.executors.JobExecutor;
-import scheduler.executors.ProcessExecutor;
-import scheduler.executors.UriJobExecutor;
+import scheduler.executors.*;
 
 import java.util.*;
 
 public class JobManager {
 
     public JobManager() {
-        HashMap config = new HashMap();
-        config.put("executeUsers", new ArrayList(){{add("writer");}});
-        config.put("readUsers", new ArrayList(){{add("reader");}});
-        jobs.put("test", new DummyExecutor(config));
+        HashMap testConfig = new HashMap();
+        testConfig.put("executeUsers", new ArrayList(){{add("writer");}});
+        testConfig.put("readUsers", new ArrayList(){{add("reader");}});
+        jobs.put("test", new DummyExecutor(testConfig));
     }
 
     HashMap<String, JobExecutor> jobs = new HashMap<>();
@@ -75,6 +72,13 @@ public class JobManager {
             return true;
         }
         return false;
+    }
+
+    public void addRequestMonitor(RequestManager requestManager) {
+        HashMap requestConfig = new HashMap();
+        requestConfig.put("executeUsers", new ArrayList(){{add("*");}});
+        requestConfig.put("readUsers", new ArrayList(){{add("*");}});
+        jobs.put("requests", new RequestMonitor(requestConfig, requestManager));
     }
 
 }

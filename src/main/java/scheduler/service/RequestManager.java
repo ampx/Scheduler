@@ -1,7 +1,6 @@
 package scheduler.service;
 
 import scheduler.util.table.dao.TableSource;
-import scheduler.util.table.logic.TableUtil;
 import scheduler.util.table.model.Table;
 import scheduler.util.time.model.Time;
 import org.apache.commons.text.RandomStringGenerator;
@@ -25,6 +24,7 @@ public class RequestManager {
     Timer timer;
     String defaultUser = "*";
     String defaultSource = "*";
+    String defaultLabel = "*";
 
     public RequestManager(){
         enableCleanup();
@@ -37,6 +37,7 @@ public class RequestManager {
 
     public void setJobManager(JobManager jobManager) {
         this.jobManager = jobManager;
+        this.jobManager.addRequestMonitor(this);
     }
 
     public void setScheduler(Scheduler scheduler) {
@@ -72,23 +73,6 @@ public class RequestManager {
         return false;
     }
 
-    public Table getRequests(Request request){
-        HashMap args = request.getArgs();
-        if (args.containsKey("label") && !args.get("label").equals("*")) {
-            Request originalReq = getUserRequest(request.getSource(), request.getUser(), request.getLabel());
-            if (originalReq != null) {
-                Table table = new Table(3);
-                table.setHeaders(new String[]{"Target", "Status", "Submit time"});
-                table.addRow(new String[]{originalReq.getTarget(), originalReq.getStatusString(),
-                        originalReq.getRequestTime().mysqlString()});
-                return TableUtil.objectToTable(originalReq);
-            }
-        } else {
-
-        }
-        return null;
-    }
-
     public boolean deleteUserRequest(Request request){
         /*HashMap<String, Object> options = scheduler.request.getOptions();
         if (options.containsKey("delete")){
@@ -102,10 +86,10 @@ public class RequestManager {
     //cache result scheduler.request user has privilege to run original submit scheduler.request
     public Table getCachedResult(Request getRequest){
         Request submitRequest = null;
-        if (getRequest.getLabel() != null && !getRequest.getLabel().equals("*")) {
-            submitRequest = getUserRequest(getRequest.getSource(), getRequest.getUser(), getRequest.getLabel());
+        if (getRequest.getLabel() != null && !getRequest.getLabel().equals(defaultLabel)) {
+            submitRequest = getUserSubmitRequest(getRequest.getSource(), getRequest.getUser(), getRequest.getLabel());
         } else {
-            submitRequest = getJobRequest(getRequest.getTarget(), getRequest.getArgs());
+            submitRequest = getSubmitRequest(getRequest.getTarget(), getRequest.getArgs());
         }
         if (submitRequest != null && submitRequest.isComplete()) {
             if (jobManager.jobExists(submitRequest.getTarget())
@@ -160,13 +144,13 @@ public class RequestManager {
     }
 
     public List getUserRequestLabels(String user, String source) {
-        List<String> userRequestNames = null;
+        List<String> userRequestNames = new ArrayList<>(10);
+        userRequestNames.add(defaultLabel);
         if (user == null) user = defaultUser;
         if (source == null) source = defaultSource;
         if (labelledRequestHistory.containsKey(source) && labelledRequestHistory.get(source).containsKey(user)) {
             List<Request> requests = labelledRequestHistory.get(source).get(user);
             if (requests != null && requests.size()>0) {
-                userRequestNames = new ArrayList<>(requests.size());
                 for (Request request : requests) {
                     userRequestNames.add(request.getLabel());
                 }
@@ -179,7 +163,7 @@ public class RequestManager {
         String source = request.getSource();
         String user = request.getUser();
         String requestLabel = request.getLabel();
-        if (requestLabel != null && !requestLabel.trim().isEmpty()){
+        if (requestLabel != null && !requestLabel.trim().isEmpty() && !requestLabel.equals(defaultLabel)){
             HashMap<String, List<Request>> usersRequests;
             if (labelledRequestHistory.containsKey(source)) {
                 usersRequests = labelledRequestHistory.get(source);
@@ -220,7 +204,7 @@ public class RequestManager {
     }
     
     public boolean deleteRequest(String jobName, HashMap arguments){
-        Request cleanupRequest = getJobRequest(jobName, arguments);
+        Request cleanupRequest = getSubmitRequest(jobName, arguments);
         if (cleanupRequest != null){
             List<Request> requestLog = requestHistory.get(jobName);
             requestLog.remove(cleanupRequest);
@@ -229,7 +213,17 @@ public class RequestManager {
         else return false;
     }
 
-    public Request getUserRequest(String source, String user, String requestName){
+    public Request getSubmitRequest(String user, String source, String label, String target, HashMap args) {
+        Request submitRequest = null;
+        if (label != null && !label.equals(defaultLabel)) {
+            submitRequest = getUserSubmitRequest(source, user, label);
+        } else {
+            submitRequest = getSubmitRequest(target, args);
+        }
+        return submitRequest;
+    }
+
+    public Request getUserSubmitRequest(String source, String user, String requestName){
         if (labelledRequestHistory.containsKey(source) && labelledRequestHistory.get(source).containsKey(user)){
             List<Request> requestLog = labelledRequestHistory.get(source).get(user);
             for (Request request : requestLog){
@@ -268,7 +262,7 @@ public class RequestManager {
         return generator.generate(8);
     }
 
-    private Request getJobRequest(String jobName, HashMap arguments){
+    private Request getSubmitRequest(String jobName, HashMap arguments){
         if (requestHistory.containsKey(jobName)){
             List<Request> requestLog = requestHistory.get(jobName);
             for (Request request : requestLog){

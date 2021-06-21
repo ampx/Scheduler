@@ -1,6 +1,8 @@
 package scheduler.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import scheduler.config.ObjectFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -202,41 +204,15 @@ class RequestManagerTestIT {
         assertTrue(label_list[0].equals("label0"));
     }
 
-    /*
-    Make sure that cache cleanup works
+    /*Test that can get a list of available executors
      */
     @Test
-    void testCacheCleanup() throws ConfigurationException {
-        ObjectFactory objectFactory = new ObjectFactory();
-        RequestManager requestManager = objectFactory.getRequestManager(null, null, null);
-        requestManager.disableCleanup();
-        requestManager.cacheTTLMins = 1;
-        Request jobRequest = Request.createSubmitRequest();
-        jobRequest.setUser("test_user0");
-        jobRequest.setSource("itTestSource");
-        jobRequest.setTarget("test_job0");
-        jobRequest.setArgs(new HashMap(){{put("output", "req0");put("delay", "1");}});
-        jobRequest.setOutputCapture(true);
-        assertTrue(requestManager.submitJob(jobRequest) == true);
+    void testExecutorList()  {
+        Search search = new Search();
+        String[] executor_list = restTemplate.postForObject(searchUrl, search, String[].class);
 
-        Request getRequest = Request.createGetRequest();
-        getRequest.setUser("test_user0");
-        getRequest.setSource("itTestSource");
-        getRequest.setTarget("test_job0");
-        getRequest.setArgs(new HashMap(){{put("output", "req0");put("delay", "1");}});
-        assertTrue(requestManager.getCachedResult(getRequest) == null);
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        assertTrue(requestManager.getCachedResult(getRequest) instanceof Table);
-        try {
-            Thread.sleep(60000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        assertTrue(requestManager.getCachedResult(getRequest) == null);
+        assertTrue(executor_list.length >= 1);
+        assertTrue(executor_list[0].equals("test"));
     }
 
 }

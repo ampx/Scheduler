@@ -23,7 +23,7 @@ public class ObjectFactory {
 
     @Bean
     @Autowired
-    public RequestManager getRequestManager(TableSource tableSource, Scheduler scheduler, JobManager jobManager) throws ConfigurationException {
+    public RequestManager requestManager(TableSource tableSource, Scheduler scheduler, JobManager jobManager) throws ConfigurationException {
         RequestManager requestManager = new RequestManager(configProperties.getCacheTTLMins());
         requestManager.setCacheManager(tableSource);
         requestManager.setJobManager(jobManager);

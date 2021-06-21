@@ -27,9 +27,15 @@ public class RequestDeserializer extends StdDeserializer<Request> {
             throws IOException, JsonProcessingException {
         JsonNode node = jp.getCodec().readTree(jp);
         Request request;
-        String targetName = node.get("targets").get(0).get("target").asText();
+        String targetName = null;
+        if (node.get("targets").get(0).has("target")) {
+            targetName = node.get("targets").get(0).get("target").asText();
+        }
         JsonNode targetData = node.get("targets").get(0).get("data");
-        String type = targetData.get("type").asText();
+        String type = null;
+        if (targetData.has("type")) {
+            type = targetData.get("type").asText();
+        }
         if (type.equals("get")) {
             request = Request.createGetRequest();
         } else if (type.equals("submit")) {

@@ -41,6 +41,11 @@ public class DummyExecutor extends JobExecutor {
             }
             table.addRow(row);
         }
+        String[] headers = new String[columns];
+        for (int k = 0; k < columns; k++){
+            headers[k] = "column" + k;
+        }
+        table.setHeaders(headers);
         try {
             Thread.sleep(delaySec * 1000);
         } catch (InterruptedException e) {
