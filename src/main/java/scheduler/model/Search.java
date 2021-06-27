@@ -12,6 +12,8 @@ public class Search {
     String user;
     String source;
 
+    String tempLabel;
+
     public String getUser() {
         return user;
     }
