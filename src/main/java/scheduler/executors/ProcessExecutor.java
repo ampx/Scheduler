@@ -7,17 +7,22 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.util.*;
 
-public class ProcessExecutor extends JobExecutor {
+public class ProcessExecutor extends Executor {
     private String process;
     private String argEquality="=";
     private Set argSet = new HashSet();
     private String homeDir = null;
     private String[] envVars = null;
+    private String[] fixedArgs = null;
 
     public ProcessExecutor(HashMap<String, Object> config) {
         super(config);
         if (config.containsKey("process")) {
             this.process = (String) config.get("process");
+        }
+        if (config.containsKey("fixedArgs")) {
+            ArrayList argList = (ArrayList) config.get("fixedArgs");
+            fixedArgs = (String[]) argList.toArray(new String[argList.size()]);
         }
         if (config.containsKey("homeDir")) {
             this.homeDir = (String) config.get("homeDir");
@@ -53,7 +58,6 @@ public class ProcessExecutor extends JobExecutor {
                 while ((s = br.readLine()) != null) {
                     outputTable.addRow(new String[]{s});
                 }
-
             }
             p.waitFor();
             Integer exitValue = p.exitValue();//can do interesting stuff here to log if job failed
@@ -67,6 +71,11 @@ public class ProcessExecutor extends JobExecutor {
     public String[] cmdAppender(HashMap<Object, Object> arguments) {
         List<String> processList = new ArrayList<>();
         processList.add(process);
+        if (fixedArgs != null) {
+            for (String arg : fixedArgs) {
+                processList.add(arg);
+            }
+        }
         if (arguments != null) {
             for (Map.Entry<Object, Object> entry : arguments.entrySet()) {
                 if (argSet.contains(entry.getKey())){

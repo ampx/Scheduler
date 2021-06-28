@@ -1,6 +1,6 @@
 package scheduler.service;
 
-import scheduler.executors.JobExecutor;
+import scheduler.executors.Executor;
 import scheduler.util.table.dao.TableSource;
 import scheduler.util.table.model.Table;
 import scheduler.model.Request;
@@ -22,7 +22,7 @@ public class Scheduler {
 
     public Table run(Request runRequest){
         try {
-            JobExecutor jobExecutor = jobManager.getJob(runRequest.getTarget());
+            Executor jobExecutor = jobManager.getJob(runRequest.getTarget());
             if (jobExecutor != null) {
                 return jobExecutor.execute(runRequest.getArgs(), runRequest.isOutputCapture());
             }
@@ -55,7 +55,7 @@ public class Scheduler {
         public void run(){
             try {
                 request.progress();
-                JobExecutor jobExecutor = jobManager.getJob(request.getTarget());
+                Executor jobExecutor = jobManager.getJob(request.getTarget());
                 if (jobExecutor != null) {
                     HashMap<String, Object> args = request.getArgs();
                     if (request.getDumpCacheName() != null) {

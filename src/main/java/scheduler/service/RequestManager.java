@@ -143,8 +143,8 @@ public class RequestManager {
         return response;*/return null;
     }
 
-    public List getUserRequestLabels(String user, String source) {
-        List<String> userRequestNames = new ArrayList<>(10);
+    public Set getUserRequestLabels(String user, String source, String tempLabel) {
+        Set<String> userRequestNames = new HashSet<>(10);
         userRequestNames.add(defaultLabel);
         if (user == null) user = defaultUser;
         if (source == null) source = defaultSource;
@@ -155,6 +155,9 @@ public class RequestManager {
                     userRequestNames.add(request.getLabel());
                 }
             }
+        }
+        if (tempLabel != null && !tempLabel.trim().isEmpty() && !tempLabel.equals(defaultLabel)) {
+            userRequestNames.add(tempLabel);
         }
         return userRequestNames;
     }

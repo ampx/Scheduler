@@ -13,10 +13,10 @@ public class JobManager {
         jobs.put("test", new DummyExecutor(testConfig));
     }
 
-    HashMap<String, JobExecutor> jobs = new HashMap<>();
+    HashMap<String, Executor> jobs = new HashMap<>();
 
     public boolean addExecutor(String executorName, String type, HashMap<String, Object> config){
-        JobExecutor jobExecutor = createExecutor(type, config);
+        Executor jobExecutor = createExecutor(type, config);
         if (jobExecutor != null) {
             jobs.put(executorName, jobExecutor);
             return true;
@@ -24,7 +24,7 @@ public class JobManager {
         return false;
     }
 
-    public boolean addExecutor(String executorName, JobExecutor executor) {
+    public boolean addExecutor(String executorName, Executor executor) {
         if (executorName != null && executor != null) {
             jobs.put(executorName, executor);
             return true;
@@ -32,11 +32,11 @@ public class JobManager {
         return false;
     }
 
-    public JobExecutor createExecutor(String type, HashMap<String, Object> config) {
-        JobExecutor jobExecutor = null;
+    public Executor createExecutor(String type, HashMap<String, Object> config) {
+        Executor jobExecutor = null;
         if (jobExecutor == null) {
             if (type.equals("get")) {
-                jobExecutor = new UriJobExecutor(config);
+                jobExecutor = new UriExecutor(config);
             } else if (type.equals("process")) {
                 jobExecutor = new ProcessExecutor(config);
             }
@@ -54,12 +54,12 @@ public class JobManager {
         }
         return false;
     }
-    public JobExecutor getJob(String jobName){
+    public Executor getJob(String jobName){
         return jobs.get(jobName);
     }
 
     public boolean processPermission(String user, String jobName){
-        JobExecutor jobProcessing = getJob(jobName);
+        Executor jobProcessing = getJob(jobName);
         if (jobProcessing != null && jobProcessing.canExecute(user)) {
             return true;
         }
@@ -67,7 +67,7 @@ public class JobManager {
     }
 
     public boolean readPermission(String user, String jobName){
-        JobExecutor jobProcessing = getJob(jobName);
+        Executor jobProcessing = getJob(jobName);
         if (jobProcessing != null && jobProcessing.canRead(user)) {
             return true;
         }

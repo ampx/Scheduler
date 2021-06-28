@@ -42,7 +42,7 @@ public class GrafanaSchedulerController {
     public Iterable<String> search(@RequestBody Search search) {
         if (search != null) {
             if (search.getUser() != null && search.getSource() != null) {
-                return requestManager.getUserRequestLabels(search.getUser(), search.getSource());
+                return requestManager.getUserRequestLabels(search.getUser(), search.getSource(), search.getTempLabel());
             } else {
                 return requestManager.getJobList();
             }

@@ -11,7 +11,6 @@ public class Search {
 
     String user;
     String source;
-
     String tempLabel;
 
     public String getUser() {
@@ -28,5 +27,13 @@ public class Search {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public String getTempLabel() {
+        return tempLabel;
+    }
+
+    public void setTempLabel(String tempLabel) {
+        this.tempLabel = tempLabel;
     }
 }

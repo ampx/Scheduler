@@ -5,7 +5,7 @@ import scheduler.util.table.model.Table;
 import java.util.HashMap;
 import java.util.Random;
 
-public class DummyExecutor extends JobExecutor {
+public class DummyExecutor extends Executor {
 
     Integer defaultRows = 5;
     Integer defaultColumns = 5;

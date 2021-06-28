@@ -10,13 +10,13 @@ import java.util.HashMap;
 
 import static scheduler.util.table.logic.TableUtil.toTable;
 
-public class UriJobExecutor extends JobExecutor {
+public class UriExecutor extends Executor {
     String uri;
     RestTemplate restTemplate;
     protected String argDeliminator;
     protected String argEquality;
 
-    public UriJobExecutor(HashMap<String, Object> config) {
+    public UriExecutor(HashMap<String, Object> config) {
         super(config);
         if (config.containsKey("uri")) {
             this.uri = (String) config.get("uri");

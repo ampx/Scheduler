@@ -23,7 +23,9 @@ public class SearchSerializer extends StdSerializer<Search> {
             Search search, JsonGenerator jgen, SerializerProvider provider) throws IOException {
         jgen.writeStartObject();
         if (search.getSource() != null || search.getUser() != null) {
-            String jsonStr = "{\"user\":\"" + search.getUser() + "\", \"source\":\"" + search.getSource() + "\"}";
+            String jsonStr = "{\"user\":\"" + search.getUser() + "\", " +
+                    "\"tempLabel\":\"" + search.getTempLabel() + "\", " +
+                    "\"source\":\"" + search.getSource() + "\"}";
             jgen.writeObjectField("target", jsonStr);
         }
         jgen.writeEndObject();

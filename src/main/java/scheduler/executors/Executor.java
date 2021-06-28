@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class JobExecutor {
+public abstract class Executor {
     Set<String> executeUsers;
     Set<String> readUsers;
 
-    public JobExecutor(HashMap<String, Object> config){
+    public Executor(HashMap<String, Object> config){
         if (config.containsKey("executeUsers")) {
             Set<String> executeUsers = new HashSet<>();
             Set<String> readUsers = new HashSet<>();

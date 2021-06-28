@@ -38,6 +38,9 @@ public class SearchDeserializer extends StdDeserializer<Search> {
                 if (targetData.has("source")) {
                     search.setSource(targetData.get("source").asText());
                 }
+                if (targetData.has("tempLabel")) {
+                    search.setTempLabel(targetData.get("tempLabel").asText());
+                }
             }
         } catch (Exception e) {
 

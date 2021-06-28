@@ -1,16 +1,12 @@
 package scheduler.executors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.ApplicationContext;
 import scheduler.model.Request;
 import scheduler.service.RequestManager;
-import scheduler.util.table.logic.TableUtil;
 import scheduler.util.table.model.Table;
 
 import java.util.HashMap;
 
-public class RequestMonitor extends JobExecutor {
+public class RequestMonitor extends Executor {
 
     RequestManager requestManager;
 
