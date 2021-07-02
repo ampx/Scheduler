@@ -6,9 +6,11 @@
 
 ![Architecture Overview](docs/img/scheduler_overview.PNG)
 
+* Grafana datasource that is designed to service as proxy to run external processes, get data from external web api, or trigger java logic
+
 * Grafana datasource for making sync or async calls to trigger ETL jobs.
     * Make sync call from Grafana to trigger a job and return a results
-    * Make sync call from Grafana to schedule a longer running job. Poll the scheduler server for results
+    * Make async call from Grafana to schedule a longer running job. Poll the scheduler server for results
     * Can also be used to simply trigger resources 
 
 * Scheduler is a java backend uses Executors to generate data to Grafana
@@ -19,7 +21,7 @@
 Scheduler current implementation includes two executors
 * Process executor - trigger external script (for example python ETL script) and provide arguments from Grafana variables
 * Uri executor - fetch data from external web api using GET calls
-Scheduler is design to be extended with custom Java executors 
+* Extend Scheduler by designing custom Java executors 
 
 ![Runner Demo](docs/img/runner_animation.gif)
 
