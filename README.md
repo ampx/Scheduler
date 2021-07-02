@@ -25,10 +25,10 @@ You can implement your own executor by extending Executor parent class and provi
 ![Runner Demo](docs/img/runner_animation.gif)
 
 Scheduler can be used to generate data instantly as a regular datasource using Run requests. 
-Fill out available options, and your request will be instantly passed down to targeted executor. 
-Configured panel will instantly display the data produced by the executor.  
-For continuously updated data, you can turn on auto-refresh to continuously target an executor.  
-This is a good use case for simple computations or querying external API.
+Fill out available options, and your request will be instantly passed down to targeted executor. Configured panel will 
+wait for the executor to produce output. For frequently updated data, you can 
+turn on auto-refresh to continuously target an executor. This is a good use case for simple computations or 
+querying external API. 
 See details on the request form for more details.
 
 **Submit Request**
@@ -38,14 +38,14 @@ See details on the request form for more details.
 Submit requests changes the way Grafana gets data from a data source. By adding Button Plugin to Grafana user can 
 submit processing request asynchronously.
 ([My implementation of Grafana Button](https://github.com/ampx/grafana-json-button)) 
-Once submitted, user can close out the page completely and fetch the results later.
+Once submitted, user can close out the page completely and fetch the results at later time.
 Scheduler will cache the results for a configured amount of time.  
 User can poll for completed data or progress status manually using data refresh button.
 Alternatively user can enable auto-refresh to see progress change or to make data available immediately 
 (Be cautious if you expect large data to be returned).
 
-You can assign a label to a submitted job, 
-and then fetch the results for that job by selecting assigned label from a drop down selection.
+You can assign a unique label when submitting a new request  The labels can then be used to get status or cached data  
+by selecting previously created label from a drop down option.  
 
 *Alternative way to submit a job:*
 
@@ -91,6 +91,30 @@ jobsConfigList[0].config.process=/usr/bin/python
 ```
 
 Each Executor implementation has specific configurations, see documentation for individual executors for available options
+
+## Requests
+
+**Request Parameters:**
+
+* *target* - name of the Executor instance being invoked by the request.
+* *args* - json object containing arguments for targeted executor
+* *type* - type of request (run/submit/get)
+* *user* - (optional) send username with request
+* *source* - (optional) send dashboard name with request
+
+*Run
+
+```json
+{
+  "user":",${__user.login}",
+  "source":"$__dashboard",
+  "target":"test",
+  "type":"run",
+  "args":{
+    "delaySec":$delay,"rows":$rows,"columns":$columns,"startTime":$__from,"endTime":$__to
+  }
+}
+```
 
 ## Executors
 
