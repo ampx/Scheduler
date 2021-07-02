@@ -30,9 +30,7 @@ Scheduler is design to be extended with custom Java executors
 
 ##Configuration:
 
-provide file name
-
-provide individual configurations
+*  Available configurations:
 
 ```properties
 cacheTTLMins=60
@@ -46,6 +44,18 @@ cacheJdbcConfig.databaseName=databaseName
 jobsConfigList[0].type=process
 jobsConfigList[0].name=process1
 jobsConfigList[0].config.process=/usr/bin/python
+```
+
+* To load your custom configurations, provide a path to your config file using command line:
+
+```
+--spring.config.location=file:///Users/home/config/jdbc.properties
+```
+
+* Configurations can be passed in as command line arguments.  This is usefull for testing or when you need to edit few conigurations. For example:
+
+```
+--cacheTTLMins=5
 ```
 
 executor configurations are specific to each executor, see documentation for individual executors for available options
