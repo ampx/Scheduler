@@ -19,7 +19,10 @@ public class GrafanaSchedulerController {
     RequestManager requestManager;
 
     @PostMapping("/scheduler/query")
-    public List<Table> query(@RequestBody Request request) {
+    public List<Table> query(@RequestBody Request request, @RequestHeader Map<String, String> headers) {
+        //System.out.println(headers);
+        String grafanaUser = headers.get("x-grafana-user");
+        request.setUser(grafanaUser);
         List<Table> tables = null;
         if (request != null) {
             tables = new ArrayList<>();

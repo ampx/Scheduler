@@ -61,17 +61,20 @@ Meaning you would not be able to fetch results using arguments from previously s
 
 ##Configuration:
 
-*  Available configurations:
+*  Configurations:
 
 ```properties
+#cache cleanup policy
 cacheTTLMins=60
 
+#cache detail
 cacheJdbcConfig.driver=com.mysql.jdbc.Driver
 cacheJdbcConfig.url=jdbc:mysql://localhost:3306/databaseName?characterEncoding=latin1
 cacheJdbcConfig.user=user
 cacheJdbcConfig.password=password
 cacheJdbcConfig.databaseName=databaseName
 
+#executor instance configurations
 jobsConfigList[0].type=process
 jobsConfigList[0].name=process1
 jobsConfigList[0].config.process=/usr/bin/python
@@ -96,25 +99,49 @@ Each Executor implementation has specific configurations, see documentation for 
 
 **Request Parameters:**
 
-* *target* - name of the Executor instance being invoked by the request.
+* *target* - name of the executor instance being invoked. Select executor instance name from  either metric selection 
+  drop-down or by explicitly specifying it in json body in query form. (Selection in json body will overwrite metric 
+  selection)
 * *args* - json object containing arguments for targeted executor
-* *type* - type of request (run/submit/get)
-* *user* - (optional) send username with request
-* *source* - (optional) send dashboard name with request
+* *type* - Grafana sends all the queries to the same endpoint. So you have to explicitly provide the type of the 
+  query as argument in json body
+  * *run* - use this type if you want Grafana to wait for executor to finish working
+  * *submit* - use this type if you want to submit a request to scheduler and have Grafana fetch results later
+  * *get* - use this request type to fetch data from previously submitted request
+* *source* - (optional) send dashboard name or other unique identifier for request source.  You can use source value to 
+organize label requests from various sources.
 
-*Run
+## Working with Scheduler from Grafana:
 
-```json
-{
-  "user":",${__user.login}",
-  "source":"$__dashboard",
-  "target":"test",
-  "type":"run",
-  "args":{
-    "delaySec":$delay,"rows":$rows,"columns":$columns,"startTime":$__from,"endTime":$__to
-  }
-}
-```
+**Run**
+
+Create a new panel and select scheduler as the datasource.  Data for run request:
+
+* Target executor instance name
+* Executor arguments
+
+![Architecture Overview](docs/img/run_configuration_example.PNG)
+
+**Submit**
+
+Create a new panel and select Grafana Button as panel type.  Set scheduler as datasource for button.  Data for submit
+request:
+
+* Target executor instance name
+* Arguments passed to executor
+* User defined label for submitted request (Optional parameter).  Scheduler will ignore label names with empty string or 
+wild card
+
+For submit requests we create a panel to submit data processing request - it will not produce any data.
+
+![Architecture Overview](docs/img/submit_configuration_example.PNG)
+
+**Get**
+
+Create a new panel and select scheduler as the datasource.  Data for run request:
+
+![Architecture Overview](docs/img/get_configuration_example.PNG)
+
 
 ## Executors
 
