@@ -35,9 +35,9 @@ public class RequestManager {
         enableCleanup();
     }
 
-    public void setJobManager(JobManager jobManager) {
-        this.jobManager = jobManager;
-        this.jobManager.addRequestMonitor(this);
+    public void setJobManager(ExecutorManager executorManager) {
+        this.executorManager = executorManager;
+        this.executorManager.addRequestMonitor(this);
     }
 
     public void setScheduler(Scheduler scheduler) {
@@ -49,15 +49,15 @@ public class RequestManager {
         this.cacheManager = cacheManager;
     }
 
-    JobManager jobManager;
+    ExecutorManager executorManager;
     Scheduler scheduler;
     //StatsCollector statsCollector;
     TableSource cacheManager;
 
     public boolean submitJob(Request request){
         try {
-            if (jobManager.jobExists(request.getTarget())
-                    && jobManager.processPermission(request.getUser(), request.getTarget())) {
+            if (executorManager.jobExists(request.getTarget())
+                    && executorManager.processPermission(request.getUser(), request.getTarget())) {
                 if (request.isDataDump()) {
                     request.setDumpCacheName(createCacheTableName(request.getRequestTime(), request.getTarget()));
                 } else if (request.isOutputCapture()) {
@@ -92,8 +92,8 @@ public class RequestManager {
             submitRequest = getSubmitRequest(getRequest.getTarget(), getRequest.getArgs());
         }
         if (submitRequest != null && submitRequest.isComplete()) {
-            if (jobManager.jobExists(submitRequest.getTarget())
-                    && jobManager.readPermission(getRequest.getUser(), submitRequest.getTarget())) {
+            if (executorManager.jobExists(submitRequest.getTarget())
+                    && executorManager.readPermission(getRequest.getUser(), submitRequest.getTarget())) {
                 String cacheName = null;
                 if (getRequest.isDataDump()) {
                     cacheName = submitRequest.getDumpCacheName();
@@ -110,8 +110,8 @@ public class RequestManager {
 
     public Table runJob(Request runRequest){
         try {
-            if (jobManager.jobExists(runRequest.getTarget())
-                    && jobManager.processPermission(runRequest.getUser(), runRequest.getTarget())) {
+            if (executorManager.jobExists(runRequest.getTarget())
+                    && executorManager.processPermission(runRequest.getUser(), runRequest.getTarget())) {
                 return scheduler.run(runRequest);
             }
         } catch (Exception e) {
@@ -239,7 +239,7 @@ public class RequestManager {
     }
 
     public Set<String> getJobList() {
-        return jobManager.getJobList();
+        return executorManager.getJobList();
     }
 
     public String createCacheTableName(Time timestamp, String name) {

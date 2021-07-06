@@ -1,11 +1,12 @@
 package scheduler.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import scheduler.service.JobManager;
+import scheduler.service.ExecutorManager;
 import scheduler.service.RequestManager;
 import scheduler.service.Scheduler;
 import scheduler.util.table.dao.InMemoryTableSource;
@@ -23,10 +24,10 @@ public class ObjectFactory {
 
     @Bean
     @Autowired
-    public RequestManager requestManager(TableSource tableSource, Scheduler scheduler, JobManager jobManager) throws ConfigurationException {
+    public RequestManager requestManager(TableSource tableSource, Scheduler scheduler, ExecutorManager executorManager) throws ConfigurationException {
         RequestManager requestManager = new RequestManager(configProperties.getCacheTTLMins());
         requestManager.setCacheManager(tableSource);
-        requestManager.setJobManager(jobManager);
+        requestManager.setJobManager(executorManager);
         requestManager.setScheduler(scheduler);
         return requestManager;
     }
@@ -42,23 +43,25 @@ public class ObjectFactory {
     }
 
     @Bean
-    public JobManager getJobManager() {
-        JobManager jobManager = new JobManager();
+    @Qualifier("externalExecutorManager")
+    public ExecutorManager getJobManager(ExecutorManager externalExecutorManager) {
+        ExecutorManager executorManager = new ExecutorManager();
+        executorManager.setExternalExecutorManager(externalExecutorManager);
         List<ConfigProperties.JobsConfig> jobsConfigList = configProperties.getJobsConfigList();
         if (jobsConfigList != null && jobsConfigList.size() > 0){
             for (ConfigProperties.JobsConfig config : jobsConfigList) {
-                jobManager.addExecutor(config.getName(), config.getType(), config.getConfig());
+                executorManager.addExecutor(config.getName(), config.getType(), config.getConfig());
             }
         }
-        return jobManager;
+        return executorManager;
     }
 
     @Bean
     @Autowired
-    public Scheduler getScheduler(TableSource tableSource, JobManager jobManager) throws ConfigurationException {
+    public Scheduler getScheduler(TableSource tableSource, ExecutorManager executorManager) throws ConfigurationException {
         Scheduler scheduler = new Scheduler();
         scheduler.setCacheManager(tableSource);
-        scheduler.setJobManager(jobManager);
+        scheduler.setJobManager(executorManager);
         return scheduler;
     }
 

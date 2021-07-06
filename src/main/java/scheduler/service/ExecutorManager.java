@@ -4,13 +4,19 @@ import scheduler.executors.*;
 
 import java.util.*;
 
-public class JobManager {
+public class ExecutorManager {
 
-    public JobManager() {
+    ExecutorManager externalExecutorManager = null;
+
+    public ExecutorManager() {
         HashMap testConfig = new HashMap();
         testConfig.put("executeUsers", new ArrayList(){{add("writer");}});
         testConfig.put("readUsers", new ArrayList(){{add("reader");}});
         jobs.put("test", new DummyExecutor(testConfig));
+    }
+
+    public void setExternalExecutorManager(ExecutorManager externalExecutorManager) {
+        this.externalExecutorManager = externalExecutorManager;
     }
 
     HashMap<String, Executor> jobs = new HashMap<>();
@@ -33,15 +39,18 @@ public class JobManager {
     }
 
     public Executor createExecutor(String type, HashMap<String, Object> config) {
-        Executor jobExecutor = null;
-        if (jobExecutor == null) {
+        Executor newExecutor = null;
+        if (externalExecutorManager != null) {
+            newExecutor = externalExecutorManager.createExecutor(type, config);
+        }
+        if (newExecutor == null) {
             if (type.equals("get")) {
-                jobExecutor = new UriExecutor(config);
+                newExecutor = new UriExecutor(config);
             } else if (type.equals("process")) {
-                jobExecutor = new ProcessExecutor(config);
+                newExecutor = new ProcessExecutor(config);
             }
         }
-        return jobExecutor;
+        return newExecutor;
     }
 
     public Set<String> getJobList() {

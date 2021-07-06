@@ -145,26 +145,31 @@ Create a new panel and select scheduler as the datasource.  Data for run request
 
 ## Executors
 
-Process
+**Process Executor** - Start external process from Scheduler
 
-* About
-
-* Security
+* Executor name - *process*
 
 * Configurations
+  * *process* - external process to b
+  * *argSet* - list of process arguments allowed from Grafana
+  * *fixedArgs* - constant list of process arguments passed that are passed on every request
+  * *homeDir* - home directory for process execution
+  * *envVars* - set environment variable before running process
 
-UriExecutor
 
-* About
+**Web API Executor** - Get data from external API. Array returned by external server will be converted into a table,
+object into a row. Top level objects are converted into cells, nested objects will be in parents cell.
 
-* How output parsed
+* Executor name - *get*
 
 * Configurations
+  * *argSet* - list of process arguments allowed from Grafana
+  * *fixedArgs* - constant list of process arguments passed that are passed on every request
 
-Creating Executor
+**Custom Executors** - Create your own executor by creating a class that extends Executor abstract class. There are two 
+ways to add your executor to executor factory:
 
-* Which class to implement
+* Update Scheduler source code and build it yourself - update createExecutor method in ExecutorManager.
 
-* Adding factory bean configuration
-
-
+* Add Scheduler library to your own project. You will need to add Spring Bean configuration that creates instance of 
+your implementation of ExecutorManager.  Your implementation will need to implement createExecutor method.

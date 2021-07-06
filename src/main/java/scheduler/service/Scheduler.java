@@ -9,20 +9,20 @@ import java.util.HashMap;
 
 public class Scheduler {
 
-    public void setJobManager(JobManager jobManager) {
-        this.jobManager = jobManager;
+    public void setJobManager(ExecutorManager executorManager) {
+        this.executorManager = executorManager;
     }
 
     public void setCacheManager(TableSource cacheManager) {
         this.cacheManager = cacheManager;
     }
 
-    JobManager jobManager;
+    ExecutorManager executorManager;
     TableSource cacheManager;
 
     public Table run(Request runRequest){
         try {
-            Executor jobExecutor = jobManager.getJob(runRequest.getTarget());
+            Executor jobExecutor = executorManager.getJob(runRequest.getTarget());
             if (jobExecutor != null) {
                 return jobExecutor.execute(runRequest.getArgs(), runRequest.isOutputCapture());
             }
@@ -55,7 +55,7 @@ public class Scheduler {
         public void run(){
             try {
                 request.progress();
-                Executor jobExecutor = jobManager.getJob(request.getTarget());
+                Executor jobExecutor = executorManager.getJob(request.getTarget());
                 if (jobExecutor != null) {
                     HashMap<String, Object> args = request.getArgs();
                     if (request.getDumpCacheName() != null) {
