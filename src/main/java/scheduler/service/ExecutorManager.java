@@ -44,7 +44,7 @@ public class ExecutorManager {
             newExecutor = externalExecutorManager.createExecutor(type, config);
         }
         if (newExecutor == null) {
-            if (type.equals("get")) {
+            if (type.equals("rest")) {
                 newExecutor = new UriExecutor(config);
             } else if (type.equals("process")) {
                 newExecutor = new ProcessExecutor(config);

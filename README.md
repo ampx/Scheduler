@@ -157,10 +157,10 @@ Create a new panel and select scheduler as the datasource.  Data for run request
   * *envVars* - set environment variable before running process
 
 
-**Web API Executor** - Get data from external API. Array returned by external server will be converted into a table,
+**Rest Executor** - Get data from external API. Array returned by external server will be converted into a table,
 object into a row. Top level objects are converted into cells, nested objects will be in parents cell.
 
-* Executor name - *get*
+* Executor name - *rest*
 
 * Configurations
   * *argSet* - list of process arguments allowed from Grafana
