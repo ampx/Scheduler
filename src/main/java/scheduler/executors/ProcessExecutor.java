@@ -10,19 +10,13 @@ import java.util.*;
 public class ProcessExecutor extends Executor {
     private String process;
     private String argEquality="=";
-    private Set argSet = new HashSet();
     private String homeDir = null;
     private String[] envVars = null;
-    private String[] fixedArgs = null;
 
     public ProcessExecutor(HashMap<String, Object> config) {
         super(config);
         if (config.containsKey("process")) {
             this.process = (String) config.get("process");
-        }
-        if (config.containsKey("fixedArgs")) {
-            ArrayList argList = (ArrayList) config.get("fixedArgs");
-            fixedArgs = (String[]) argList.toArray(new String[argList.size()]);
         }
         if (config.containsKey("homeDir")) {
             this.homeDir = (String) config.get("homeDir");
@@ -30,9 +24,6 @@ public class ProcessExecutor extends Executor {
         if (config.containsKey("envVars")) {
             ArrayList varsList = (ArrayList) config.get("envVars");
             envVars = (String[]) varsList.toArray(new String[varsList.size()]);
-        }
-        if (config.containsKey("argSet")) {
-            argSet.addAll((ArrayList) config.get("argSet"));
         }
     }
 
@@ -71,17 +62,18 @@ public class ProcessExecutor extends Executor {
     public String[] cmdAppender(HashMap<Object, Object> arguments) {
         List<String> processList = new ArrayList<>();
         processList.add(process);
-        if (fixedArgs != null) {
-            for (String arg : fixedArgs) {
-                processList.add(arg);
-            }
+        HashMap<Object, Object> cleanArgs = new HashMap();
+        if (fixedArgs != null) cleanArgs.putAll(fixedArgs);
+        HashMap filteredArgs = filterRequestArgs(arguments);
+        if (filteredArgs != null) {
+            cleanArgs.putAll(filterRequestArgs(arguments));
         }
-        if (arguments != null) {
-            for (Map.Entry<Object, Object> entry : arguments.entrySet()) {
-                if (argSet.contains(entry.getKey())){
-                    String arg = entry.getKey() + argEquality + entry.getValue();
-                    processList.add(arg);
-                }
+        for (Map.Entry<Object, Object> entry : cleanArgs.entrySet()) {
+            if (entry.getValue() != null && !entry.getValue().equals("")) {
+                String arg = entry.getKey() + argEquality + entry.getValue();
+                processList.add(arg);
+            } else {
+                processList.add((String) entry.getKey());
             }
         }
         return processList.toArray(new String[processList.size()]);
@@ -93,10 +85,6 @@ public class ProcessExecutor extends Executor {
 
     public String getArgEquality() {
         return argEquality;
-    }
-
-    public Set getArgSet() {
-        return argSet;
     }
 
     public String getHomeDir() {

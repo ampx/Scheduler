@@ -2,9 +2,9 @@
 
 ## Overview 
 
-Scheduler is a Grafana datasource that serves as a proxy for calling external processes or APIs.
+Scheduler is Grafana proxy datasource for calling external processes or APIs.
   As the name implies, you can make async calls from Grafana to schedule a
-  long-running process and then monitor the progress or
+  long-running process and then monitor the progress and
   fetch cached output at later time.
 
 Scheduler is a Java backend that instantiates Executors.  Executors are modules callable from Grafana to

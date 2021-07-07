@@ -2,14 +2,13 @@ package scheduler.executors;
 
 import scheduler.util.table.model.Table;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public abstract class Executor {
     Set<String> executeUsers;
     Set<String> readUsers;
+    protected Set argSet = new HashSet();
+    protected HashMap fixedArgs = null;
 
     public Executor(HashMap<String, Object> config){
         if (config.containsKey("executeUsers")) {
@@ -37,6 +36,12 @@ public abstract class Executor {
             }
             setExecuteUsers(executeUsers);
             setReadUsers(readUsers);
+            if (config.containsKey("argSet")) {
+                argSet.addAll((ArrayList) config.get("argSet"));
+            }
+            if (config.containsKey("fixedArgs")) {
+                fixedArgs = (HashMap) config.get("fixedArgs");
+            }
         }
     }
 
@@ -70,5 +75,18 @@ public abstract class Executor {
             return true;
         }
         return false;
+    }
+
+    public HashMap filterRequestArgs(HashMap<Object, Object> requestArgs) {
+        HashMap cleanArgs = null;
+        if (requestArgs != null) {
+            cleanArgs = new HashMap();
+            for (Map.Entry<Object, Object> entry : requestArgs.entrySet()) {
+                if (argSet.contains(entry.getKey())) {
+                    cleanArgs.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return cleanArgs;
     }
 }

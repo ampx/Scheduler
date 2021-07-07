@@ -40,6 +40,8 @@ public class UriExecutor extends Executor {
     public Table execute(HashMap arguments, boolean captureOutput) {
         Table outputTable = null;
         try {
+            arguments = filterRequestArgs(arguments);
+            arguments.putAll(fixedArgs);
             if (captureOutput) {
                 String outputStr = restTemplate.getForObject(uriArgAppender(uri, arguments), String.class);
                 if (outputStr.startsWith("[")) {
