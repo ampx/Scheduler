@@ -12,6 +12,8 @@ public class ProcessExecutor extends Executor {
     private String argEquality="=";
     private String homeDir = null;
     private String[] envVars = null;
+    private Boolean captureOutput = false;
+    private String cacheArg = null;
 
     public ProcessExecutor(HashMap<String, Object> config) {
         super(config);
@@ -25,6 +27,12 @@ public class ProcessExecutor extends Executor {
             ArrayList varsList = (ArrayList) config.get("envVars");
             envVars = (String[]) varsList.toArray(new String[varsList.size()]);
         }
+        if (config.containsKey("captureOutput")) {
+            this.captureOutput = (Boolean) config.get("captureOutput");
+        }
+        if (config.containsKey("cacheArg")) {
+            this.cacheArg = (String) config.get("cacheArg");
+        }
     }
 
     public void setArgEquality(String argEquality) {
@@ -35,11 +43,15 @@ public class ProcessExecutor extends Executor {
     public Table execute(HashMap arguments, String cacheName) {
         Process p;
         Table outputTable = null;
+        HashMap filteredArgs = filterRequestArgs(arguments);
+        if (cacheArg != null && cacheName != null && filteredArgs != null) {
+            filteredArgs.put(cacheArg, cacheName);
+        }
         try {
             if (homeDir != null) {
-                p = Runtime.getRuntime().exec(cmdAppender(arguments), envVars, new File(homeDir));
+                p = Runtime.getRuntime().exec(cmdAppender(filteredArgs), envVars, new File(homeDir));
             } else {
-                p = Runtime.getRuntime().exec(cmdAppender(arguments), envVars);
+                p = Runtime.getRuntime().exec(cmdAppender(filteredArgs), envVars);
             }
             if (captureOutput) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -62,18 +74,15 @@ public class ProcessExecutor extends Executor {
     public String[] cmdAppender(HashMap<Object, Object> arguments) {
         List<String> processList = new ArrayList<>();
         processList.add(process);
-        HashMap<Object, Object> cleanArgs = new HashMap();
-        if (fixedArgs != null) cleanArgs.putAll(fixedArgs);
-        HashMap filteredArgs = filterRequestArgs(arguments);
-        if (filteredArgs != null) {
-            cleanArgs.putAll(filterRequestArgs(arguments));
-        }
-        for (Map.Entry<Object, Object> entry : cleanArgs.entrySet()) {
-            if (entry.getValue() != null && !entry.getValue().equals("")) {
-                String arg = entry.getKey() + argEquality + entry.getValue();
-                processList.add(arg);
-            } else {
-                processList.add((String) entry.getKey());
+        if (arguments != null) {
+            if (fixedArgs != null) arguments.putAll(fixedArgs);
+            for (Map.Entry<Object, Object> entry : arguments.entrySet()) {
+                if (entry.getValue() != null && !entry.getValue().equals("")) {
+                    String arg = entry.getKey() + argEquality + entry.getValue();
+                    processList.add(arg);
+                } else {
+                    processList.add((String) entry.getKey());
+                }
             }
         }
         return processList.toArray(new String[processList.size()]);

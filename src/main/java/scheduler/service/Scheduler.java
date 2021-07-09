@@ -24,7 +24,7 @@ public class Scheduler {
         try {
             Executor jobExecutor = executorManager.getJob(runRequest.getTarget());
             if (jobExecutor != null) {
-                return jobExecutor.execute(runRequest.getArgs(), runRequest.isOutputCapture());
+                return jobExecutor.execute(runRequest.getArgs(), null);
             }
             runRequest.complete();
         } catch (Exception e) {
@@ -58,17 +58,9 @@ public class Scheduler {
                 Executor jobExecutor = executorManager.getJob(request.getTarget());
                 if (jobExecutor != null) {
                     HashMap<String, Object> args = request.getArgs();
-                    if (request.getDumpCacheName() != null) {
-                        if (args == null) {
-                            args = new HashMap<>();
-                        }
-                        args.put("cacheTable", request.getDumpCacheName());
-                    }
-                    if (request.isOutputCapture() != null) {
-                        Table outputTable = jobExecutor.execute(args, true);
-                        cacheManager.insertTable(outputTable, request.getOutputCacheName());
-                    } else {
-                        jobExecutor.execute(args, false);
+                    Table outputTable = jobExecutor.execute(args, request.getCacheName());
+                    if (outputTable != null && request.getCacheName() != null) {
+                        cacheManager.insertTable(outputTable, request.getCacheName());
                     }
                     request.complete();
                 }
