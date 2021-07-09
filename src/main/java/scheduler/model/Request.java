@@ -29,10 +29,8 @@ public class Request {
     HashMap<String, Object> args = new HashMap<>();
     Time requestTime;
     volatile Time completionTime;
-    Boolean outputCapture = false;
-    String outputCacheName;
-    Boolean dataDump = false;
-    String dumpCacheName;
+    Boolean doCache = true;
+    String cacheName;
 
     public String getSource() {
         return source;
@@ -62,38 +60,6 @@ public class Request {
         return completionTime;
     }
 
-    public Boolean isOutputCapture() {
-        return outputCapture;
-    }
-
-    public void setOutputCapture(Boolean capture) {
-        this.outputCapture = capture;
-    }
-
-    public Boolean isDataDump() {
-        return dataDump;
-    }
-
-    public void setDataDump(Boolean dump) {
-        this.dataDump = dump;
-    }
-
-    public String getOutputCacheName() {
-        return outputCacheName;
-    }
-
-    public void setOutputCacheName(String outputCacheName) {
-        this.outputCacheName = outputCacheName;
-    }
-
-    public String getDumpCacheName() {
-        return dumpCacheName;
-    }
-
-    public void setDumpCacheName(String dumpCacheName) {
-        this.dumpCacheName = dumpCacheName;
-    }
-
     public void setSource(String source) {
         this.source = source;
     }
@@ -112,6 +78,22 @@ public class Request {
 
     public void setArgs(HashMap<String, Object> args) {
         this.args = args;
+    }
+
+    public Boolean getDoCache() {
+        return doCache;
+    }
+
+    public void setDoCache(Boolean doCache) {
+        this.doCache = doCache;
+    }
+
+    public String getCacheName() {
+        return cacheName;
+    }
+
+    public void setCacheName(String cacheName) {
+        this.cacheName = cacheName;
     }
 
     public enum Type{

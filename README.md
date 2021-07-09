@@ -7,11 +7,11 @@ Scheduler is Grafana proxy datasource for calling external processes or APIs.
   long-running process and then monitor the progress and
   fetch cached output at later time.
 
-Scheduler is a Java backend that instantiates Executors.  Executors are modules callable from Grafana to
+Executors are computational modules of the Scheduler. Executors are callable from Grafana to
   produce data.  Other parts of the Scheduler handle queuing of the requests from Grafana and caching executors output.
   Currently, there are two build in executors:
   * Process executor - trigger external script (for example python ETL script) and provide arguments from Grafana variables
-  * Uri executor - fetch data from external web api using GET calls
+  * Rest executor - fetch data from external web api using GET calls
   
 You can implement your own executor by extending Executor parent class and providing a factory bean to instantiate
   your custom Executor.
@@ -40,11 +40,12 @@ submit processing request asynchronously.
 ([My implementation of Grafana Button](https://github.com/ampx/grafana-json-button)) 
 Once submitted, user can close out the page completely and fetch the results at later time.
 Scheduler will cache the results for a configured amount of time.  
-User can poll for completed data or progress status manually using data refresh button.
+Using Get requests user can poll for completed data or progress status manually using data refresh button.
 Alternatively user can enable auto-refresh to see progress change or to make data available immediately 
 (Be cautious if you expect large data to be returned).
 
-You can assign a unique label when submitting a new request  The labels can then be used to get status or cached data  
+There are two methods to retrieve submitted request status or to get completed results.  First you can assign a unique 
+label when submitting a new request.  The labels can then be used to get status or cached data  
 by selecting previously created label from a drop down option.  
 
 *Alternative way to submit a job:*
@@ -129,16 +130,19 @@ request:
 
 * Target executor instance name
 * Arguments passed to executor
-* User defined label for submitted request (Optional parameter).  Scheduler will ignore label names with empty string or 
+* User defined label (Optional parameter).  Scheduler will ignore label names with empty string or 
 wild card
-
-For submit requests we create a panel to submit data processing request - it will not produce any data.
 
 ![Architecture Overview](docs/img/submit_configuration_example.PNG)
 
 **Get**
 
 Create a new panel and select scheduler as the datasource.  Data for run request:
+
+* Target executor instance name
+* Arguments passed to executor (Optional if labels are not used)
+* User defined label (Optional if arguments are not used).  Scheduler will ignore label names with empty string or
+  wild card
 
 ![Architecture Overview](docs/img/get_configuration_example.PNG)
 

@@ -45,7 +45,7 @@ public abstract class Executor {
         }
     }
 
-    public abstract Table execute(HashMap arguments, boolean captureOutput);
+    public abstract Table execute(HashMap arguments, String cacheName);
 
     public Set<String> getExecuteUsers() {
         return executeUsers;

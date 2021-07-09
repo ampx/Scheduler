@@ -37,7 +37,7 @@ public class UriExecutor extends Executor {
     }
 
     @Override
-    public Table execute(HashMap arguments, boolean captureOutput) {
+    public Table execute(HashMap arguments, String cacheName) {
         Table outputTable = null;
         try {
             arguments = filterRequestArgs(arguments);
