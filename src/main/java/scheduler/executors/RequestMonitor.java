@@ -16,7 +16,7 @@ public class RequestMonitor extends Executor {
     }
 
     @Override
-    public Table execute(HashMap arguments, boolean captureOutput) {
+    public Table execute(HashMap arguments, String cacheName) {
         String user = null;
         String source = null;
         String label = null;

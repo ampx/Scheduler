@@ -87,20 +87,4 @@ public class ProcessExecutor extends Executor {
         }
         return processList.toArray(new String[processList.size()]);
     }
-
-    public String getProcess() {
-        return process;
-    }
-
-    public String getArgEquality() {
-        return argEquality;
-    }
-
-    public String getHomeDir() {
-        return homeDir;
-    }
-
-    public String[] getEnvVars() {
-        return envVars;
-    }
 }

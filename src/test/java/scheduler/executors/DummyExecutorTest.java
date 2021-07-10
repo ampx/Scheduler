@@ -17,7 +17,7 @@ class DummyExecutorTest {
         args.put("columns",4);
         args.put("delaySec", 1);
         Time start = Time.now();
-        Table result = executor.execute(args, false);
+        Table result = executor.execute(args, null);
         Time end = Time.now();
         assertTrue(start.duration(end).getSeconds()>=1);
         assertTrue(result.getRows().size() == 3);

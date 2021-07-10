@@ -15,6 +15,7 @@ public class UriExecutor extends Executor {
     RestTemplate restTemplate;
     protected String argDeliminator;
     protected String argEquality;
+    Boolean captureOutput = true;
 
     public UriExecutor(HashMap<String, Object> config) {
         super(config);
@@ -25,6 +26,7 @@ public class UriExecutor extends Executor {
         else setArgDeliminator("&");
         if (config.containsKey("argEquality")) setArgEquality((String) config.get("argEquality"));
         else setArgEquality("=");
+        if (config.containsKey("captureOutput")) captureOutput = (Boolean)config.get("captureOutput");
         restTemplate = new RestTemplate();
     }
 

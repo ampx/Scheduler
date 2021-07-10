@@ -17,7 +17,7 @@ public class DummyExecutor extends Executor {
     }
 
     @Override
-    public Table execute(HashMap arguments, boolean captureOutput) {
+    public Table execute(HashMap arguments, String cacheName) {
         Integer metricMin = defaultMetricsMin;
         Integer metricMax = defaultMetricsMax;
         Integer numberOfMetrics = defaultNumberOfMetrics;

@@ -29,8 +29,7 @@ public class RequestSerializer extends StdSerializer<Request> {
         jgen.writeObjectField("user", request.getUser());
         jgen.writeObjectField("source", request.getSource());
         jgen.writeObjectField("type", request.getTypeString().toLowerCase());
-        jgen.writeObjectField("output_capture",request.isOutputCapture());
-        jgen.writeObjectField("data_dump",request.isDataDump());
+        jgen.writeObjectField("cache",request.getDoCache());
         jgen.writeObjectField("label",request.getLabel());
         if (request.getArgs() != null ) {
             jgen.writeObjectFieldStart("args");

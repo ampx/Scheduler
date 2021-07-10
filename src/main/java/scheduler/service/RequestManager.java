@@ -58,10 +58,8 @@ public class RequestManager {
         try {
             if (executorManager.jobExists(request.getTarget())
                     && executorManager.processPermission(request.getUser(), request.getTarget())) {
-                if (request.isDataDump()) {
-                    request.setDumpCacheName(createCacheTableName(request.getRequestTime(), request.getTarget()));
-                } else if (request.isOutputCapture()) {
-                    request.setOutputCacheName(createCacheTableName(request.getRequestTime(), request.getTarget()));
+                if (request.getDoCache()) {
+                    request.setCacheName(createCacheTableName(request.getRequestTime(), request.getTarget()));
                 }
                 if (saveRequest(request)) {
                     return scheduler.submit(request);
@@ -95,12 +93,7 @@ public class RequestManager {
             if (executorManager.jobExists(submitRequest.getTarget())
                     && executorManager.readPermission(getRequest.getUser(), submitRequest.getTarget())) {
                 String cacheName = null;
-                if (getRequest.isDataDump()) {
-                    cacheName = submitRequest.getDumpCacheName();
-                } else if (getRequest.isOutputCapture()) {
-                    cacheName = submitRequest.getOutputCacheName();
-                }
-                if (cacheName != null) {
+                if (submitRequest.getCacheName() != null) {
                     return cacheManager.getTable(cacheName);
                 }
             }

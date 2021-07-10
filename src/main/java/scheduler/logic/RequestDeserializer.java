@@ -63,10 +63,7 @@ public class RequestDeserializer extends StdDeserializer<Request> {
         }
         request.setTarget(targetName);
         if (targetData.has("data_dump")) {
-            request.setDataDump(targetData.get("data_dump").asBoolean());
-        }
-        if (targetData.has("output_capture")) {
-            request.setOutputCapture(targetData.get("output_capture").asBoolean());
+            request.setDoCache(targetData.get("cache").asBoolean());
         }
         return request;
     }
