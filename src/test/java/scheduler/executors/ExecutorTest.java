@@ -5,14 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ProcessExecutorTest {
-
+class ExecutorTest {
     @Test
-    void testCmdBuilder() throws JsonProcessingException {
+    void testSanitizeRequestArgs() throws JsonProcessingException {
         String argStr = "{\n" +
                 "  \"process\":\"python3\",\n" +
                 "  \"argSet\":[\"arg_name0\",\"arg_name1\"],\n" +
@@ -25,10 +23,11 @@ class ProcessExecutorTest {
         HashMap args = new HashMap();
         args.put("arg_name0", "value0");
         args.put("arg_name1", 1);
-        String[] cmdArray = processExecutor.cmdAppender(args);
-        assertTrue(cmdArray.length == 3);
-        assertTrue(cmdArray[0].equals("python3"));
-        assertTrue(cmdArray[1].equals("arg_name0=value0"));
-        assertTrue(cmdArray[2].equals("arg_name1=1"));
+        args.put("invalid_arg","invalid");
+        HashMap sanitizeRequestArgs = processExecutor.sanitizeRequestArgs(args);
+        assertTrue(sanitizeRequestArgs.size() == 2);
+        assertTrue(sanitizeRequestArgs.get("arg_name0").equals("value0"));
+        assertTrue(sanitizeRequestArgs.get("arg_name1").equals(1));
     }
+
 }

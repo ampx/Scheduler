@@ -154,11 +154,16 @@ Create a new panel and select scheduler as the datasource.  Data for run request
 * Executor name - *process*
 
 * Configurations
-  * *process* - external process to b
+  * *process* - external process to 
   * *argSet* - list of process arguments allowed from Grafana
   * *fixedArgs* - constant list of process arguments passed that are passed on every request
   * *homeDir* - home directory for process execution
   * *envVars* - set environment variable before running process
+  * *captureOutput* - capture std out from process - will pass to Grafana unprocessed result - each line converted to 
+  new table raw
+  * *cacheArg* - pass unique cache name created by scheduler to external process. Use this option if the invoked process
+    will handle pushing data to cache.  Set to argument name expected by external process.  Data cached by the external
+    process will be overwritten if cacheArg and captureOutput is set.
 
 
 **Rest Executor** - Get data from external API. Array returned by external server will be converted into a table,

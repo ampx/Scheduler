@@ -40,7 +40,7 @@ class RequestManagerTestIT {
         HashMap args = new HashMap();
         args.put("delaySec",1);
         runRequest.setArgs(args);
-        runRequest.setOutputCapture(true);
+        runRequest.setDoCache(true);
 
         HttpEntity<Request> request = new HttpEntity<>(runRequest);
         Table[] result = restTemplate.postForObject(queryUrl, request, Table[].class);
@@ -62,14 +62,14 @@ class RequestManagerTestIT {
         HashMap args = new HashMap();
         args.put("delaySec",1);
         submitRequest.setArgs(args);
-        submitRequest.setOutputCapture(true);
+        submitRequest.setDoCache(true);
 
         Request getRequest = Request.createGetRequest();
         getRequest.setUser("writer");
         getRequest.setSource("source0");
         getRequest.setTarget("test");
         getRequest.setArgs(args);
-        getRequest.setOutputCapture(true);
+        getRequest.setDoCache(true);
         Table[] result = restTemplate.postForObject(queryUrl, submitRequest, Table[].class);
         assertTrue(result.length == 0);
         result = restTemplate.postForObject(queryUrl, getRequest, Table[].class);
@@ -97,14 +97,14 @@ class RequestManagerTestIT {
         HashMap args = new HashMap();
         args.put("delaySec",1);
         submitRequest.setArgs(args);
-        submitRequest.setOutputCapture(true);
+        submitRequest.setDoCache(true);
 
         Request getRequest = Request.createGetRequest();
         getRequest.setUser("reader");
         getRequest.setSource("source0");
         getRequest.setTarget("test");
         getRequest.setArgs(args);
-        getRequest.setOutputCapture(true);
+        getRequest.setDoCache(true);
 
         restTemplate.postForObject(queryUrl, submitRequest, Table[].class);
         try {
@@ -129,14 +129,14 @@ class RequestManagerTestIT {
         HashMap args = new HashMap();
         args.put("delaySec",1);
         submitRequest.setArgs(args);
-        submitRequest.setOutputCapture(true);
+        submitRequest.setDoCache(true);
 
         Request getRequest = Request.createGetRequest();
         getRequest.setUser("reader");
         getRequest.setSource("source0");
         getRequest.setTarget("test");
         getRequest.setArgs(args);
-        getRequest.setOutputCapture(true);
+        getRequest.setDoCache(true);
 
         restTemplate.postForObject(queryUrl, submitRequest, Table[].class);
         try {
@@ -161,7 +161,7 @@ class RequestManagerTestIT {
         HashMap args = new HashMap();
         args.put("delaySec",1);
         submitRequest.setArgs(args);
-        submitRequest.setOutputCapture(true);
+        submitRequest.setDoCache(true);
 
         Request getRequest = Request.createGetRequest();
         getRequest.setUser("writer");
@@ -169,7 +169,7 @@ class RequestManagerTestIT {
         getRequest.setLabel("label0");
         getRequest.setTarget("test");
         getRequest.setArgs(args);
-        getRequest.setOutputCapture(true);
+        getRequest.setDoCache(true);
         restTemplate.postForObject(queryUrl, submitRequest, Table[].class);
         try {
             Thread.sleep(1500);
@@ -192,7 +192,7 @@ class RequestManagerTestIT {
         HashMap args = new HashMap();
         args.put("delaySec",1);
         submitRequest.setArgs(args);
-        submitRequest.setOutputCapture(true);
+        submitRequest.setDoCache(true);
         restTemplate.postForObject(queryUrl, submitRequest, Table[].class);
 
         Search search = new Search();

@@ -43,15 +43,17 @@ public class ProcessExecutor extends Executor {
     public Table execute(HashMap arguments, String cacheName) {
         Process p;
         Table outputTable = null;
-        HashMap filteredArgs = filterRequestArgs(arguments);
-        if (cacheArg != null && cacheName != null && filteredArgs != null) {
-            filteredArgs.put(cacheArg, cacheName);
+        if (cacheArg != null && cacheName != null) {
+            if (arguments == null) {
+                arguments = new HashMap();
+            }
+            arguments.put(cacheArg, cacheName);
         }
         try {
             if (homeDir != null) {
-                p = Runtime.getRuntime().exec(cmdAppender(filteredArgs), envVars, new File(homeDir));
+                p = Runtime.getRuntime().exec(cmdAppender(arguments), envVars, new File(homeDir));
             } else {
-                p = Runtime.getRuntime().exec(cmdAppender(filteredArgs), envVars);
+                p = Runtime.getRuntime().exec(cmdAppender(arguments), envVars);
             }
             if (captureOutput) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));

@@ -77,7 +77,7 @@ public abstract class Executor {
         return false;
     }
 
-    public HashMap filterRequestArgs(HashMap<Object, Object> requestArgs) {
+    public HashMap sanitizeRequestArgs(HashMap<Object, Object> requestArgs) {
         HashMap cleanArgs = null;
         if (requestArgs != null) {
             cleanArgs = new HashMap();

@@ -30,7 +30,7 @@ class RequestManagerTest {
         jobRequest.setSource("source0");
         jobRequest.setTarget("test");
         jobRequest.setArgs(new HashMap(){{put("delaySec",1);}});
-        jobRequest.setOutputCapture(true);
+        jobRequest.setDoCache(true);
         assertTrue(requestManager.submitJob(jobRequest) == true);
 
         Request getRequest = Request.createGetRequest();

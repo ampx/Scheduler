@@ -23,8 +23,12 @@ public class Scheduler {
     public Table run(Request runRequest){
         try {
             Executor jobExecutor = executorManager.getJob(runRequest.getTarget());
+            HashMap args = runRequest.getArgs();
             if (jobExecutor != null) {
-                return jobExecutor.execute(runRequest.getArgs(), null);
+                if (args != null) {
+                    args = jobExecutor.sanitizeRequestArgs(args);
+                }
+                return jobExecutor.execute(args, null);
             }
             runRequest.complete();
         } catch (Exception e) {
@@ -57,7 +61,10 @@ public class Scheduler {
                 request.progress();
                 Executor jobExecutor = executorManager.getJob(request.getTarget());
                 if (jobExecutor != null) {
-                    HashMap<String, Object> args = request.getArgs();
+                    HashMap args = request.getArgs();
+                    if (args != null) {
+                        args = jobExecutor.sanitizeRequestArgs(args);
+                    }
                     Table outputTable = jobExecutor.execute(args, request.getCacheName());
                     if (outputTable != null && request.getCacheName() != null) {
                         cacheManager.insertTable(outputTable, request.getCacheName());
