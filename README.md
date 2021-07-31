@@ -154,9 +154,9 @@ Create a new panel and select scheduler as the datasource.  Data for run request
 * Executor name - *process*
 
 * Configurations
-  * *process* - external process to 
   * *argSet* - list of process arguments allowed from Grafana
   * *fixedArgs* - constant list of process arguments passed that are passed on every request
+  * *process* - external process
   * *homeDir* - home directory for process execution
   * *envVars* - set environment variable before running process
   * *captureOutput* - capture std out from process - will pass to Grafana unprocessed result - each line converted to 

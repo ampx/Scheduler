@@ -92,9 +92,8 @@ public class RequestManager {
         if (submitRequest != null && submitRequest.isComplete()) {
             if (executorManager.jobExists(submitRequest.getTarget())
                     && executorManager.readPermission(getRequest.getUser(), submitRequest.getTarget())) {
-                String cacheName = null;
                 if (submitRequest.getCacheName() != null) {
-                    return cacheManager.getTable(cacheName);
+                    return cacheManager.getTable(submitRequest.getCacheName());
                 }
             }
         }

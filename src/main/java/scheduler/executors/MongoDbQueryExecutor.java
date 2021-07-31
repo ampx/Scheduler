@@ -9,6 +9,7 @@ import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -38,18 +39,33 @@ public class MongoDbQueryExecutor extends Executor {
         Block<Document> createTable = new Block<Document>() {
             @Override
             public void apply(final Document document) {
-                if (result.getColumns())
-                System.out.println(document.toJson());
-                document.size();
+                if (result.getColumns() == null) {
+                    Table.Column[] columns = new Table.Column[document.size()];
+                    result.columns = columns;
+                    int i = 0;
+                    for (String key : document.keySet()) {
+                        Object value = document.get(key);
+                        if (value instanceof Number) columns[i++] = result.createNumericColumn(key);
+                        if (value instanceof Date) columns[i++] = result.createTimestampColumn(key);
+                        else columns[i++] = result.createStringColumn(key);
+                    }
+                }
+                Object[] row = new Object[result.columns.length];
+                int i = 0;
+                for (Table.Column column : result.columns) {
+                    Object value = document.get(column.text);
+                    if (column.type == Table.ColumnType.time && value != null) {
+                        row[i++] = ((Date)value).getTime()/1000;
+                    }
+                    else row[i++] = value;
+                }
             }
         };
-        //BasicDBObject query = BasicDBObject.parse((String) arguments.get("find"));
-        //collection.find(query).forEach(createTable);
         List filterList = new ArrayList();
         for (Object key : arguments.keySet()) {
             filterList.add(eq((String) key, arguments.get(key)));
         }
         collection.find(and(filterList));
-        return result.get();
+        return result;
     }
 }

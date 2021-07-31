@@ -24,13 +24,13 @@ public class RequestSerializer extends StdSerializer<Request> {
         jgen.writeFieldName("targets");
         jgen.writeStartArray();
         jgen.writeStartObject();
-        jgen.writeObjectField("target", request.getTarget());
+        if(request.getTarget() != null) jgen.writeObjectField("target", request.getTarget());
         jgen.writeObjectFieldStart("data");
-        jgen.writeObjectField("user", request.getUser());
-        jgen.writeObjectField("source", request.getSource());
-        jgen.writeObjectField("type", request.getTypeString().toLowerCase());
-        jgen.writeObjectField("cache",request.getDoCache());
-        jgen.writeObjectField("label",request.getLabel());
+        if (request.getUser() != null) jgen.writeObjectField("user", request.getUser());
+        if (request.getSource() != null) jgen.writeObjectField("source", request.getSource());
+        if (request.getTypeString() != null) jgen.writeObjectField("type", request.getTypeString().toLowerCase());
+        if (request.getDoCache() != null) jgen.writeObjectField("cache",request.getDoCache());
+        if (request.getLabel() != null) jgen.writeObjectField("label",request.getLabel());
         if (request.getArgs() != null ) {
             jgen.writeObjectFieldStart("args");
             HashMap args = request.getArgs();

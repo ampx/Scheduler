@@ -30,8 +30,7 @@ public class SearchDeserializer extends StdDeserializer<Search> {
         Search search = new Search();
         try {
             if (node.has("target")) {
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode targetData = mapper.readTree(node.get("target").asText());
+                JsonNode targetData = node.get("target");
                 if (targetData.has("user")) {
                     search.setUser(targetData.get("user").asText());
                 }

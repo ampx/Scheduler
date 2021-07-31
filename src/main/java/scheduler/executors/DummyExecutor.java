@@ -2,7 +2,9 @@ package scheduler.executors;
 
 import scheduler.util.table.model.Table;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 public class DummyExecutor extends Executor {
@@ -14,6 +16,13 @@ public class DummyExecutor extends Executor {
 
     public DummyExecutor(HashMap<String, Object> config) {
         super(config);
+        argSet = new HashSet(){{
+            add("delaySec");
+            add("metricMax");
+            add("numberOfMetrics");
+            add("startTime");
+            add("endTime");
+        }};
     }
 
     @Override
@@ -62,9 +71,9 @@ public class DummyExecutor extends Executor {
             headers[k+1] = "metric" + k;
         }
         table.setHeaders(headers);
-        table.columns[0].type = "time";
+        table.columns[0].type = Table.ColumnType.time;
         for (int k = 0; k < numberOfMetrics; k++){
-            table.columns[k+1].type = "number";
+            table.columns[k+1].type = Table.ColumnType.number;
         }
         try {
             Thread.sleep(delaySec * 1000);

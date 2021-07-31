@@ -55,9 +55,9 @@ public class JdbcTableSource extends TableSource {
                 String sqlInsert0 = "INSERT INTO EMP_ADDRESS(";
                 Table.Column[] headers = table.getColumns();
                 for (Table.Column header: headers) {
-                    if (header.type == "number") {
+                    if (header.type == Table.ColumnType.number) {
                         sqlCreate += header.text + " double,";
-                    } else if (header.type == "time") {
+                    } else if (header.type == Table.ColumnType.time) {
                         sqlCreate += header.text + " datetime,";
                     } else {
                         sqlCreate += header.text + " varchar(255),";

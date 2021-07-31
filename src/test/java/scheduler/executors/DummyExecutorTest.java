@@ -13,14 +13,14 @@ class DummyExecutorTest {
     void testExecutor() {
         DummyExecutor executor = new DummyExecutor(new HashMap<>());
         HashMap args = new HashMap();
-        args.put("rows",3);
-        args.put("columns",4);
-        args.put("delaySec", 1);
+        Integer delaySec  = 1;
+        Integer numberOfMetrics = 7;
+        args.put("numberOfMetrics", numberOfMetrics);
+        args.put("delaySec", delaySec);
         Time start = Time.now();
         Table result = executor.execute(args, null);
         Time end = Time.now();
-        assertTrue(start.duration(end).getSeconds()>=1);
-        assertTrue(result.getRows().size() == 3);
-        assertTrue(result.getRows().get(0).length == 4);
+        assertTrue(start.duration(end).getSeconds()>=delaySec);
+        assertTrue(result.getRows().get(0).length == numberOfMetrics + 1);
     }
 }

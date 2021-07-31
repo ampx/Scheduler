@@ -3,6 +3,8 @@ package scheduler.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.http.HttpHeaders;
+import org.springframework.test.annotation.DirtiesContext;
 import scheduler.config.ObjectFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,11 +22,28 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
         properties = {"server.port=8080"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class RequestManagerTestIT {
 
-    String queryUrl = "http://localhost:8080//api/v2/query";
-    String searchUrl = "http://localhost:8080//api/v2/search";
+    String queryUrl = "http://localhost:8080/scheduler/query";
+    String searchUrl = "http://localhost:8080/scheduler/search";
     RestTemplate restTemplate = new RestTemplate();
+
+    public HttpHeaders getReadUserHeader(){
+        String readUser = "reader";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("x-grafana-user", readUser);
+        return headers;
+    }
+
+    public HttpHeaders getExecuteUserHeader(){
+        String executeUsers = "writer";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("x-grafana-user", executeUsers);
+        return headers;
+    }
+
+    String testTarget = "test";
 
     /*
     Exercise a run scheduler.request & Uri processor
@@ -33,16 +52,16 @@ class RequestManagerTestIT {
      */
     @Test
     void testRunRequest() throws ConfigurationException, JsonProcessingException {
+
         Request runRequest = Request.createRunRequest();
-        runRequest.setUser("writer");
         runRequest.setSource("source0");
-        runRequest.setTarget("test");
+        runRequest.setTarget(testTarget);
         HashMap args = new HashMap();
         args.put("delaySec",1);
         runRequest.setArgs(args);
         runRequest.setDoCache(true);
 
-        HttpEntity<Request> request = new HttpEntity<>(runRequest);
+        HttpEntity<Request> request = new HttpEntity<>(runRequest, getExecuteUserHeader());
         Table[] result = restTemplate.postForObject(queryUrl, request, Table[].class);
         Table table = result[0];
         assertTrue(table.getRows().get(0)[0] != null);
@@ -56,30 +75,30 @@ class RequestManagerTestIT {
     @Test
     void testSubmitRequest() throws ConfigurationException, JsonProcessingException {
         Request submitRequest = Request.createSubmitRequest();
-        submitRequest.setUser("writer");
         submitRequest.setSource("source0");
         submitRequest.setTarget("test");
         HashMap args = new HashMap();
         args.put("delaySec",1);
         submitRequest.setArgs(args);
         submitRequest.setDoCache(true);
+        HttpEntity<Request> submitEntity = new HttpEntity<>(submitRequest, getExecuteUserHeader());
 
         Request getRequest = Request.createGetRequest();
-        getRequest.setUser("writer");
         getRequest.setSource("source0");
         getRequest.setTarget("test");
         getRequest.setArgs(args);
         getRequest.setDoCache(true);
-        Table[] result = restTemplate.postForObject(queryUrl, submitRequest, Table[].class);
+        HttpEntity<Request> getEntity = new HttpEntity<>(getRequest, getExecuteUserHeader());
+        Table[] result = restTemplate.postForObject(queryUrl, submitEntity, Table[].class);
         assertTrue(result.length == 0);
-        result = restTemplate.postForObject(queryUrl, getRequest, Table[].class);
+        result = restTemplate.postForObject(queryUrl, getEntity, Table[].class);
         assertTrue(result.length == 0);
         try {
             Thread.sleep(1500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        result = restTemplate.postForObject(queryUrl, getRequest, Table[].class);
+        result = restTemplate.postForObject(queryUrl, getEntity, Table[].class);
         assertTrue(result.length == 1);
         assertTrue(result[0] != null);
     }
@@ -91,7 +110,6 @@ class RequestManagerTestIT {
     @Test
     void testReadOnlyPermission() throws ConfigurationException, JsonProcessingException {
         Request submitRequest = Request.createSubmitRequest();
-        submitRequest.setUser("reader");
         submitRequest.setSource("source0");
         submitRequest.setTarget("test");
         HashMap args = new HashMap();
@@ -100,19 +118,20 @@ class RequestManagerTestIT {
         submitRequest.setDoCache(true);
 
         Request getRequest = Request.createGetRequest();
-        getRequest.setUser("reader");
         getRequest.setSource("source0");
         getRequest.setTarget("test");
         getRequest.setArgs(args);
         getRequest.setDoCache(true);
 
-        restTemplate.postForObject(queryUrl, submitRequest, Table[].class);
+        HttpEntity<Request> submitEntity = new HttpEntity<>(submitRequest, getReadUserHeader());
+        HttpEntity<Request> getEntity = new HttpEntity<>(getRequest, getReadUserHeader());
+        restTemplate.postForObject(queryUrl, submitEntity, Table[].class);
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Table[] result = restTemplate.postForObject(queryUrl, getRequest, Table[].class);
+        Table[] result = restTemplate.postForObject(queryUrl, getEntity, Table[].class);
         assertTrue(result.length == 0);
     }
 
@@ -123,28 +142,27 @@ class RequestManagerTestIT {
     @Test
     void testReadOnlyPermission2() throws ConfigurationException, JsonProcessingException {
         Request submitRequest = Request.createSubmitRequest();
-        submitRequest.setUser("writer");
         submitRequest.setSource("source0");
         submitRequest.setTarget("test");
         HashMap args = new HashMap();
         args.put("delaySec",1);
         submitRequest.setArgs(args);
-        submitRequest.setDoCache(true);
 
         Request getRequest = Request.createGetRequest();
-        getRequest.setUser("reader");
         getRequest.setSource("source0");
         getRequest.setTarget("test");
         getRequest.setArgs(args);
-        getRequest.setDoCache(true);
 
-        restTemplate.postForObject(queryUrl, submitRequest, Table[].class);
+        HttpEntity<Request> submitEntity = new HttpEntity<>(submitRequest, getExecuteUserHeader());
+        HttpEntity<Request> getEntity = new HttpEntity<>(getRequest, getReadUserHeader());
+
+        restTemplate.postForObject(queryUrl, submitEntity, Table[].class);
         try {
             Thread.sleep(1500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Table[] result = restTemplate.postForObject(queryUrl, getRequest, Table[].class);
+        Table[] result = restTemplate.postForObject(queryUrl, getEntity, Table[].class);
         assertTrue(result.length == 1);
         assertTrue(result[0] != null);
     }
@@ -170,13 +188,17 @@ class RequestManagerTestIT {
         getRequest.setTarget("test");
         getRequest.setArgs(args);
         getRequest.setDoCache(true);
-        restTemplate.postForObject(queryUrl, submitRequest, Table[].class);
+
+        HttpEntity<Request> submitEntity = new HttpEntity<>(submitRequest, getExecuteUserHeader());
+        HttpEntity<Request> getEntity = new HttpEntity<>(getRequest, getExecuteUserHeader());
+
+        restTemplate.postForObject(queryUrl, submitEntity, Table[].class);
         try {
             Thread.sleep(1500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Table[] result = restTemplate.postForObject(queryUrl, getRequest, Table[].class);
+        Table[] result = restTemplate.postForObject(queryUrl, getEntity, Table[].class);
         assertTrue(result[0] != null);
     }
 
@@ -185,7 +207,6 @@ class RequestManagerTestIT {
     @Test
     void testLabeledRequests2() throws ConfigurationException, JsonProcessingException {
         Request submitRequest = Request.createSubmitRequest();
-        submitRequest.setUser("writer");
         submitRequest.setSource("source0");
         submitRequest.setTarget("test");
         submitRequest.setLabel("label0");
@@ -193,15 +214,17 @@ class RequestManagerTestIT {
         args.put("delaySec",1);
         submitRequest.setArgs(args);
         submitRequest.setDoCache(true);
-        restTemplate.postForObject(queryUrl, submitRequest, Table[].class);
+
+        HttpEntity<Request> submitEntity = new HttpEntity<>(submitRequest, getExecuteUserHeader());
+        restTemplate.postForObject(queryUrl, submitEntity, Table[].class);
 
         Search search = new Search();
         search.setSource("source0");
-        search.setUser("writer");
-        String[] label_list = restTemplate.postForObject(searchUrl, search, String[].class);
+        HttpEntity<Search> searchEntity = new HttpEntity<>(search, getExecuteUserHeader());
+        String[] label_list = restTemplate.postForObject(searchUrl, searchEntity, String[].class);
 
-        assertTrue(label_list.length == 1);
-        assertTrue(label_list[0].equals("label0"));
+        assertTrue(label_list.length > 1);
+        assertTrue(label_list[1].equals("label0"));
     }
 
     /*Test that can get a list of available executors

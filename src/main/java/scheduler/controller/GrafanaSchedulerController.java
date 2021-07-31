@@ -42,7 +42,9 @@ public class GrafanaSchedulerController {
     }
 
     @PostMapping("/scheduler/search")
-    public Iterable<String> search(@RequestBody Search search) {
+    public Iterable<String> search(@RequestBody Search search, @RequestHeader Map<String, String> headers) {
+        String grafanaUser = headers.get("x-grafana-user");
+        search.setUser(grafanaUser);
         if (search != null) {
             if (search.getUser() != null && search.getSource() != null) {
                 return requestManager.getUserRequestLabels(search.getUser(), search.getSource(), search.getTempLabel());
