@@ -26,44 +26,48 @@ public class RequestDeserializer extends StdDeserializer<Request> {
     public Request deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
         JsonNode node = jp.getCodec().readTree(jp);
-        Request request;
-        String targetName = null;
-        if (node.get("targets").get(0).has("target")) {
-            targetName = node.get("targets").get(0).get("target").asText();
-        }
-        JsonNode targetData = node.get("targets").get(0).get("data");
-        String type = null;
-        if (targetData.has("type")) {
-            type = targetData.get("type").asText();
-        }
-        if (type.equals("get")) {
-            request = Request.createGetRequest();
-        } else if (type.equals("submit")) {
-            request = Request.createSubmitRequest();
-        } else if (type.equals("run")) {
-            request = Request.createRunRequest();
-        } else {
-            return null;
-        }
-        if (targetData.has("user")) {
-            request.setUser(targetData.get("user").asText());
-        }
-        if (targetData.has("source")) {
-            request.setSource(targetData.get("source").asText());
-        }
-        if (targetData.has("label") && targetData.get("label").asText().trim().length()> 0) {
-            request.setLabel(targetData.get("label").asText());
-        }
-        if (targetData.has("args")) {
-            ObjectMapper mapper = new ObjectMapper();
-            request.setArgs(mapper.convertValue(targetData.get("args"), HashMap.class));
-        }
-        if (targetData.has("target")) {
-            targetName = targetData.get("target").asText();
-        }
-        request.setTarget(targetName);
-        if (targetData.has("data_dump")) {
-            request.setDoCache(targetData.get("cache").asBoolean());
+        Request request = null;
+        try {
+            String targetName = null;
+            if (node.get("targets").get(0).has("target")) {
+                targetName = node.get("targets").get(0).get("target").asText();
+            }
+            JsonNode targetData = node.get("targets").get(0).get("data");
+            String type = null;
+            if (targetData.has("type")) {
+                type = targetData.get("type").asText();
+            }
+            if (type.equals("get")) {
+                request = Request.createGetRequest();
+            } else if (type.equals("submit")) {
+                request = Request.createSubmitRequest();
+            } else if (type.equals("run")) {
+                request = Request.createRunRequest();
+            } else {
+                return null;
+            }
+            if (targetData.has("user")) {
+                request.setUser(targetData.get("user").asText());
+            }
+            if (targetData.has("source")) {
+                request.setSource(targetData.get("source").asText());
+            }
+            if (targetData.has("label") && targetData.get("label").asText().trim().length() > 0) {
+                request.setLabel(targetData.get("label").asText());
+            }
+            if (targetData.has("args")) {
+                ObjectMapper mapper = new ObjectMapper();
+                request.setArgs(mapper.convertValue(targetData.get("args"), HashMap.class));
+            }
+            if (targetData.has("target")) {
+                targetName = targetData.get("target").asText();
+            }
+            request.setTarget(targetName);
+            if (targetData.has("data_dump")) {
+                request.setDoCache(targetData.get("cache").asBoolean());
+            }
+        } catch (Exception e){
+
         }
         return request;
     }

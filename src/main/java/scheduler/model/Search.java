@@ -5,13 +5,17 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import scheduler.logic.SearchDeserializer;
 import scheduler.logic.SearchSerializer;
 
+import java.util.HashMap;
+
 @JsonDeserialize(using = SearchDeserializer.class)
 @JsonSerialize(using = SearchSerializer.class)
 public class Search {
 
     String user;
-    String source;
-    String tempLabel;
+    Search target;
+    String name;
+    HashMap args;
+
 
     public String getUser() {
         return user;
@@ -19,21 +23,42 @@ public class Search {
 
     public void setUser(String user) {
         this.user = user;
+        if (target != null) target.setUser(user);
     }
 
-    public String getSource() {
-        return source;
+    public String getName() {
+        return name;
     }
 
-    public void setSource(String source) {
-        this.source = source;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getTempLabel() {
-        return tempLabel;
+    public HashMap getArgs() {
+        return args;
     }
 
-    public void setTempLabel(String tempLabel) {
-        this.tempLabel = tempLabel;
+    public void setArgs(HashMap args) {
+        this.args = args;
     }
+
+    public Search getTarget() {
+        return target;
+    }
+
+    public void setTarget(Search target) {
+        this.target = target;
+        if (user != null) {
+            target.setUser(user);
+        }
+    }
+
+    public Search createTarget() {
+        target = new Search();
+        if (user != null) {
+            target.setUser(user);
+        }
+        return target;
+    }
+
 }

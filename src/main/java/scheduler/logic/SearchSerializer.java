@@ -22,14 +22,44 @@ public class SearchSerializer extends StdSerializer<Search> {
     public void serialize(
             Search search, JsonGenerator jgen, SerializerProvider provider) throws IOException {
         jgen.writeStartObject();
-        if (search.getSource() != null || search.getUser() != null) {
-            jgen.writeFieldName("target");
-            jgen.writeStartObject();
-            if (search.getUser() != null) jgen.writeObjectField("user",search.getUser());
-            if (search.getTempLabel() != null) jgen.writeObjectField("tempLabel",search.getTempLabel());
-            if (search.getSource() != null) jgen.writeObjectField("source",search.getSource());
-            jgen.writeEndObject();
+        String searchTree = null;
+        if (search != null) {
+            searchTree = "";
+            do {
+                String target = search.getName();
+                String argsStr = "";
+                if (search.getArgs() != null) {
+                    HashMap args = search.getArgs();
+                    argsStr = "?";
+                    for (Object key : args.keySet()) {
+                        if (argsStr.length() > 1) {
+                            argsStr = argsStr + "&" + key + "=" + args.get(key);
+                        } else {
+                            argsStr = argsStr + key + "=" + args.get(key);
+                        }
+                    }
+                }
+                search = search.getTarget();
+                if (searchTree.length() > 0) {
+                    searchTree += "." + target + argsStr;
+                } else {
+                    searchTree += target + argsStr;
+                }
+            } while (search != null);
         }
+        jgen.writeObjectField("target", searchTree);
         jgen.writeEndObject();
+    }
+
+    public String buildSearchString(Search search) {
+        String searchString = "{";
+        searchString = "\"" + search.getName() + "\":";
+        if (search.getTarget().getTarget() != null && search.getTarget().getArgs() != null) {
+
+        } else {
+
+        }
+        searchString += "}";
+        return searchString;
     }
 }

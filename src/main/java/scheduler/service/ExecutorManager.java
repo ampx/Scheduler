@@ -10,7 +10,7 @@ public class ExecutorManager {
 
     public ExecutorManager() {
         HashMap testConfig = new HashMap();
-        testConfig.put("executeUsers", new ArrayList(){{add("writer");}});
+        testConfig.put("executeUsers", new ArrayList(){{add("writer");add("admin");}});
         testConfig.put("readUsers", new ArrayList(){{add("reader");}});
         jobs.put("test", new DummyExecutor(testConfig));
     }

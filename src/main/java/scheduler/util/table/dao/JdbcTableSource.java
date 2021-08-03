@@ -52,7 +52,7 @@ public class JdbcTableSource extends TableSource {
         try {
             if (table != null) {
                 String sqlCreate = "CREATE TABLE " + tableName + " (";
-                String sqlInsert0 = "INSERT INTO EMP_ADDRESS(";
+                String sqlInsert0 = "INSERT INTO " + tableName + " (";
                 Table.Column[] headers = table.getColumns();
                 for (Table.Column header: headers) {
                     if (header.type == Table.ColumnType.number) {

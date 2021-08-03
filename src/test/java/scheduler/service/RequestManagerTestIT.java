@@ -218,9 +218,17 @@ class RequestManagerTestIT {
         HttpEntity<Request> submitEntity = new HttpEntity<>(submitRequest, getExecuteUserHeader());
         restTemplate.postForObject(queryUrl, submitEntity, Table[].class);
 
-        Search search = new Search();
-        search.setSource("source0");
-        HttpEntity<Search> searchEntity = new HttpEntity<>(search, getExecuteUserHeader());
+        Search requestSearch = new Search();
+        requestSearch.setName("requests");
+        Search labels = new Search();
+        requestSearch.setTarget(labels);
+        labels.setName("labels");
+        HashMap searchArg = new HashMap(){{
+            put("source","source0");
+        }};
+        labels.setArgs(searchArg);
+
+        HttpEntity<Search> searchEntity = new HttpEntity<>(requestSearch, getExecuteUserHeader());
         String[] label_list = restTemplate.postForObject(searchUrl, searchEntity, String[].class);
 
         assertTrue(label_list.length > 1);

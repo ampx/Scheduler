@@ -45,15 +45,20 @@ public class GrafanaSchedulerController {
     public Iterable<String> search(@RequestBody Search search, @RequestHeader Map<String, String> headers) {
         String grafanaUser = headers.get("x-grafana-user");
         search.setUser(grafanaUser);
-        if (search != null) {
-            if (search.getUser() != null && search.getSource() != null) {
-                return requestManager.getUserRequestLabels(search.getUser(), search.getSource(), search.getTempLabel());
-            } else {
-                return requestManager.getJobList();
+        if (search != null && "requests".equals(search.getName())) {
+            if (search.getTarget() != null && "labels".equals(search.getTarget().getName())) {
+                HashMap args = search.getTarget().getArgs();
+                if (args != null) {
+                    return requestManager.getUserRequestLabels(search.getUser(),
+                            (String)args.get("source"), (String)args.get("tempLabel"));
+                } else {
+                    return requestManager.getUserRequestLabels(search.getUser(), null, null);
+                }
             }
         } else {
-            return null;
+            return requestManager.getJobList();
         }
+        return null;
     }
 
     @ResponseStatus(HttpStatus.OK)

@@ -15,6 +15,8 @@ import java.util.HashMap;
 
 public class SearchDeserializer extends StdDeserializer<Search> {
 
+    static ObjectMapper mapper = new ObjectMapper();
+
     public SearchDeserializer() {
         this(null);
     }
@@ -26,24 +28,42 @@ public class SearchDeserializer extends StdDeserializer<Search> {
     @Override
     public Search deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
+
         JsonNode node = jp.getCodec().readTree(jp);
-        Search search = new Search();
+        Search rootSearch = new Search();
+        Search searchNode = rootSearch;
         try {
             if (node.has("target")) {
-                JsonNode targetData = node.get("target");
-                if (targetData.has("user")) {
-                    search.setUser(targetData.get("user").asText());
-                }
-                if (targetData.has("source")) {
-                    search.setSource(targetData.get("source").asText());
-                }
-                if (targetData.has("tempLabel")) {
-                    search.setTempLabel(targetData.get("tempLabel").asText());
+                //At the moment target value can be passed in only as a string value
+                //have a workaround in here to parse json object from a string
+                String targetStrRaw = node.get("target").asText();
+                String[] targetsStr = targetStrRaw.split("\\.");
+                for (String targetStr: targetsStr){
+                    if (searchNode.getName() != null) {
+                        searchNode = searchNode.createTarget();
+                    }
+                    if (targetStr.contains("?")){
+                        String[] targetWithArg = targetStr.split("\\?");
+                        searchNode.setName(targetWithArg[0]);
+                        if (targetWithArg.length > 1) {
+                            String[] argumentsStr = targetWithArg[1].split("&");
+                            HashMap args = new HashMap(argumentsStr.length);
+                            searchNode.setArgs(args);
+                            for (String argStr : argumentsStr) {
+                                String[] argStrSplit = argStr.split("=");
+                                if (argStrSplit.length == 2) {
+                                    args.put(argStrSplit[0], argStrSplit[1]);
+                                }
+                            }
+                        }
+                    } else {
+                        searchNode.setName(targetStr);
+                    }
                 }
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
-        return search;
+        return rootSearch;
     }
 }
