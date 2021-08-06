@@ -11,6 +11,7 @@ import scheduler.service.RequestManager;
 import scheduler.service.Scheduler;
 import scheduler.util.table.dao.InMemoryTableSource;
 import scheduler.util.table.dao.JdbcTableSource;
+import scheduler.util.table.dao.SqliteTableSource;
 import scheduler.util.table.dao.TableSource;
 
 import javax.naming.ConfigurationException;
@@ -35,9 +36,13 @@ public class ObjectFactory {
     @Bean
     public TableSource getTableSource() throws ConfigurationException {
         TableSource tableSource;
-        tableSource = getJdbcTableSource();
-        if (tableSource == null) {
+        if (configProperties.getInMemoryCache()) {
             tableSource = new InMemoryTableSource();
+        } else {
+            tableSource = getJdbcTableSource();
+            if (tableSource == null) {
+                tableSource = getSqliteTableSource();
+            }
         }
         return tableSource;
     }
@@ -63,6 +68,30 @@ public class ObjectFactory {
         scheduler.setCacheManager(tableSource);
         scheduler.setJobManager(executorManager);
         return scheduler;
+    }
+
+    public SqliteTableSource getSqliteTableSource() throws ConfigurationException {
+        SqliteTableSource sqliteTableSource;
+        String path = null;
+        Integer batchSize = null;
+        Integer timeOutMillis = null;
+        if (configProperties.getCacheSqliteConfig() != null) {
+            path = configProperties.getCacheSqliteConfig().getPath();
+            batchSize = configProperties.getCacheSqliteConfig().getBatchSize();
+            timeOutMillis = configProperties.getCacheSqliteConfig().getTimeoutMillis();
+        }
+        if (path != null){
+            sqliteTableSource = new SqliteTableSource(path);
+        } else {
+            sqliteTableSource = new SqliteTableSource();
+        }
+        if (batchSize != null) {
+            sqliteTableSource.setBatchSize(batchSize);
+        }
+        if (timeOutMillis != null) {
+            sqliteTableSource.setTimeoutMillis(timeOutMillis);
+        }
+        return sqliteTableSource;
     }
 
     public JdbcTableSource getJdbcTableSource() throws ConfigurationException {

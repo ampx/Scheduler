@@ -21,7 +21,7 @@ import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-        properties = {"server.port=8080"})
+        properties = {"server.port=8080","inMemoryCache=true"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class RequestManagerTestIT {
 
@@ -33,6 +33,7 @@ class RequestManagerTestIT {
         String readUser = "reader";
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-grafana-user", readUser);
+        headers.set("schedulerKey","superSecretKey");
         return headers;
     }
 
@@ -40,6 +41,15 @@ class RequestManagerTestIT {
         String executeUsers = "writer";
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-grafana-user", executeUsers);
+        headers.set("schedulerKey","superSecretKey");
+        return headers;
+    }
+
+    public HttpHeaders getExecuteUserHeaderInvalidKey(){
+        String executeUsers = "writer";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("x-grafana-user", executeUsers);
+        headers.set("schedulerKey","superSecretKey");
         return headers;
     }
 

@@ -13,10 +13,34 @@ import java.sql.Types;
 
 public class SqliteTableSource extends TableSource{
 
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public Integer getTimeoutMillis() {
+        return timeoutMillis;
+    }
+
+    public void setTimeoutMillis(Integer timeoutMillis) {
+        this.timeoutMillis = timeoutMillis;
+    }
+
+    public Integer getBatchSize() {
+        return batchSize;
+    }
+
+    public void setBatchSize(Integer batchSize) {
+        this.batchSize = batchSize;
+    }
+
     String path = "./";
     String dbName = "scheduler.db";
     Integer timeoutMillis = 200;
-    Integer batch_size = 500;
+    Integer batchSize = 500;
 
     public SqliteTableSource(String path) throws ConfigurationException {
         this.path = path;
@@ -123,7 +147,7 @@ public class SqliteTableSource extends TableSource{
                 }
                 pstmt.addBatch();
                 count++;
-                if(count % batch_size == 0){
+                if(count % batchSize == 0){
                     pstmt.executeBatch();
                     conn.commit();
                 }

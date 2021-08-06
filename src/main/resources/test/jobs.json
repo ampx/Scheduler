@@ -1,7 +1,0 @@
-{"jobs":
-        {"test_job":{
-                "process":"bash test/test_script.bash __$args",
-                "executeUsers":"test_user"
-                }
-        }
-}

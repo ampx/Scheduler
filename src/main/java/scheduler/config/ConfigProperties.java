@@ -14,7 +14,9 @@ public class ConfigProperties {
 
     private Integer cacheTTLMins = 60;
     private CacheJdbcConfig cacheJdbcConfig;
+    private CacheSqliteConfig cacheSqliteConfig;
     private List<JobsConfig> jobsConfigList;
+    private Boolean inMemoryCache = false;
 
     public List<JobsConfig> getJobsConfigList() {
         return jobsConfigList;
@@ -38,6 +40,22 @@ public class ConfigProperties {
 
     public void setCacheTTLMins(Integer cacheTTLMins) {
         this.cacheTTLMins = cacheTTLMins;
+    }
+
+    public Boolean getInMemoryCache() {
+        return inMemoryCache;
+    }
+
+    public void setInMemoryCache(Boolean inMemoryCache) {
+        this.inMemoryCache = inMemoryCache;
+    }
+
+    public CacheSqliteConfig getCacheSqliteConfig() {
+        return cacheSqliteConfig;
+    }
+
+    public void setCacheSqliteConfig(CacheSqliteConfig cacheSqliteConfig) {
+        this.cacheSqliteConfig = cacheSqliteConfig;
     }
 
     public class JobsConfig {
@@ -116,6 +134,36 @@ public class ConfigProperties {
         public void setDatabaseName(String databaseName) {
             this.databaseName = databaseName;
         }
+    }
+
+    public class CacheSqliteConfig {
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public Integer getTimeoutMillis() {
+            return timeoutMillis;
+        }
+
+        public void setTimeoutMillis(Integer timeoutMillis) {
+            this.timeoutMillis = timeoutMillis;
+        }
+
+        public Integer getBatchSize() {
+            return batchSize;
+        }
+
+        public void setBatchSize(Integer batchSize) {
+            this.batchSize = batchSize;
+        }
+
+        String path = null;
+        Integer timeoutMillis = null;
+        Integer batchSize = null;
     }
 
 }
