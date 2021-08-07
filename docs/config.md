@@ -1,5 +1,7 @@
 # Configurations:
 
+## Scheduler Configurations
+
 See [configuration template](src/main/resources/application.properties) to see available configurations
 
 Setting configurations:
@@ -16,3 +18,5 @@ Setting configurations:
 ```
 --cacheTTLMins=5
 ```
+
+## Grafana configurations:
