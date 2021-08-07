@@ -1,4 +1,11 @@
 # Scheduler
+* [Overview](#overivew)
+* [Executors](#executors)
+* [Install & Run Scheduler]()
+* [Configure Scheduler](docs/config.md)
+* [Examples](docs.examples.md)
+* [Security]()
+* [WebApi]()
 
 ## Overview 
 
@@ -58,43 +65,6 @@ automatically see the results of a previous run.
 This is especially useful if you have a report that have default arguments, but you don't want triggered automatically.
 Note that labeled and unlabeled requests are kept in a separate que.  
 Meaning you would not be able to fetch results using arguments from previously submitted job with a label assigned to it.
-
-
-##Configuration:
-
-*  Configurations:
-
-```properties
-#cache cleanup policy
-cacheTTLMins=60
-
-#cache detail
-cacheJdbcConfig.driver=com.mysql.jdbc.Driver
-cacheJdbcConfig.url=jdbc:mysql://localhost:3306/databaseName?characterEncoding=latin1
-cacheJdbcConfig.user=user
-cacheJdbcConfig.password=password
-cacheJdbcConfig.databaseName=databaseName
-
-#executor instance configurations
-jobsConfigList[0].type=process
-jobsConfigList[0].name=process1
-jobsConfigList[0].config.process=/usr/bin/python
-```
-
-* To load your custom configurations, provide a path to your config file using command line:
-
-```
---spring.config.location=file:///Users/home/config/application.properties
-```
-
-* Configurations can be passed in as command line arguments.  This is useful for testing or when you need to edit 
-  few configurations:
-
-```
---cacheTTLMins=5
-```
-
-Each Executor implementation has specific configurations, see documentation for individual executors for available options
 
 ## Requests
 
