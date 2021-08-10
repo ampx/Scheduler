@@ -1,7 +1,7 @@
 # Scheduler
 * [Overview](#overivew)
 * [Executors](#executors)
-* [Install & Run](#install-run)
+* [Install & Run](#install--run)
 * [Configure](docs/config.md)
 * [Examples](docs/examples.md)
 * [Security](#security)
