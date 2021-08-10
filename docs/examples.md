@@ -3,7 +3,7 @@
 
 **Run Requests**
 
-![Runner Demo](docs/img/runner_animation.gif)
+![Runner Demo](img/runner_animation.gif)
 
 Scheduler can be used to generate data instantly as a regular datasource using Run requests.
 Fill out available options, and your request will be instantly passed down to targeted executor. Configured panel will
@@ -14,7 +14,7 @@ See details on the request form for more details.
 
 **Submit Request**
 
-![Labeled Scheduler Demo](docs/img/labeled_animation.gif)
+![Labeled Scheduler Demo](img/labeled_animation.gif)
 
 Submit requests changes the way Grafana gets data from a data source. By adding Button Plugin to Grafana user can
 submit processing request asynchronously.
@@ -31,7 +31,7 @@ by selecting previously created label from a drop down option.
 
 *Alternative way to submit a job:*
 
-![Scheduler Demo](docs/img/scheduler_animation.gif)
+![Scheduler Demo](img/scheduler_animation.gif)
 
 Alternatively you can leave the label field blank and rely on arguments to fetch the results for previously submitted job.  
 If a user submits a job and later another user tries to create a job with the same arguments, they will
