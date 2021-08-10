@@ -2,7 +2,7 @@
 
 ## Scheduler Configurations
 
-See [configuration template](src/main/resources/application.properties) to see available configurations
+See [configuration template](../src/main/resources/application.properties) to see available configurations
 
 Setting configurations:
 

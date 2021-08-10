@@ -65,7 +65,7 @@ Create a new panel and select scheduler as the datasource.  Data for run request
 * Target executor instance name
 * Executor arguments
 
-![Architecture Overview](docs/img/run_configuration_example.PNG)
+![Architecture Overview](img/run_configuration_example.PNG)
 
 **Submit**
 
@@ -77,7 +77,7 @@ request:
 * User defined label (Optional parameter).  Scheduler will ignore label names with empty string or
   wild card
 
-![Architecture Overview](docs/img/submit_configuration_example.PNG)
+![Architecture Overview](img/submit_configuration_example.PNG)
 
 **Get**
 
@@ -88,5 +88,5 @@ Create a new panel and select scheduler as the datasource.  Data for run request
 * User defined label (Optional if arguments are not used).  Scheduler will ignore label names with empty string or
   wild card
 
-![Architecture Overview](docs/img/get_configuration_example.PNG)
+![Architecture Overview](img/get_configuration_example.PNG)
 
