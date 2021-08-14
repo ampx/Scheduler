@@ -42,7 +42,7 @@ Get latest build from [Github](https://github.com/ampx/Scheduler/releases)
 ## Security
 
 Scheduler uses shared secret key to secure communication with Grafana Server. User identity is passed in as a header 
-from Grafana Backend server. 
+from Grafana Backend server. User identity can be used to grant user permissions to trigger or view output from executor jobs
 
 ![scheduler_auth](docs/img/scheduler_auth.PNG)
 
