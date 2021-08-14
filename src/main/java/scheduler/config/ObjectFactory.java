@@ -50,13 +50,19 @@ public class ObjectFactory {
     @Bean
     @Qualifier("externalExecutorManager")
     public ExecutorManager getJobManager() {
-        ExecutorManager executorManager = new ExecutorManager();
-        //executorManager.setExternalExecutorManager(externalExecutorManager);
-        List<ConfigProperties.JobsConfig> jobsConfigList = configProperties.getJobsConfigList();
-        if (jobsConfigList != null && jobsConfigList.size() > 0){
-            for (ConfigProperties.JobsConfig config : jobsConfigList) {
-                executorManager.addExecutor(config.getName(), config.getType(), config.getConfig());
+        ExecutorManager executorManager = null;
+        try {
+            executorManager = new ExecutorManager();
+            //executorManager.setExternalExecutorManager(externalExecutorManager);
+            List<ConfigProperties.JobsConfig> jobsConfigList = configProperties.getJobsConfigList();
+            if (jobsConfigList != null && jobsConfigList.size() > 0) {
+                for (ConfigProperties.JobsConfig config : jobsConfigList) {
+                    executorManager.addExecutor(config.getName(), config.getType(), config.getConfig());
+                }
             }
+        } catch (ConfigurationException e) {
+            e.printStackTrace();
+            System.exit(1);
         }
         return executorManager;
     }

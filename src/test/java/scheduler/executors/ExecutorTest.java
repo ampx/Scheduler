@@ -4,13 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
+import javax.naming.ConfigurationException;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExecutorTest {
     @Test
-    void testSanitizeRequestArgs() throws JsonProcessingException {
+    void testSanitizeRequestArgs() throws JsonProcessingException, ConfigurationException {
         String argStr = "{\n" +
                 "  \"process\":\"python3\",\n" +
                 "  \"argSet\":[\"arg_name0\",\"arg_name1\"],\n" +

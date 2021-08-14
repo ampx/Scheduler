@@ -2,23 +2,25 @@ package scheduler.executors;
 
 import scheduler.util.table.model.Table;
 
+import javax.naming.ConfigurationException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.util.*;
 
 public class ProcessExecutor extends Executor {
-    private String process;
+    private ArrayList process;
     private String argEquality="=";
     private String homeDir = null;
     private String[] envVars = null;
     private Boolean captureOutput = false;
     private String cacheArg = null;
 
-    public ProcessExecutor(HashMap<String, Object> config) {
+    public ProcessExecutor(HashMap<String, Object> config) throws ConfigurationException {
         super(config);
-        if (config.containsKey("process")) {
-            this.process = (String) config.get("process");
+        this.process = (ArrayList) config.get("process");
+        if (this.process == null || this.process.size() == 0 || ((String)this.process.get(0)).trim().isEmpty()) {
+            throw new ConfigurationException();
         }
         if (config.containsKey("homeDir")) {
             this.homeDir = (String) config.get("homeDir");
@@ -41,6 +43,9 @@ public class ProcessExecutor extends Executor {
 
     @Override
     public Table execute(HashMap arguments, String cacheName) {
+        if (!safeArgs(arguments)) {
+            return null;
+        }
         Process p;
         Table outputTable = null;
         if (cacheArg != null && cacheName != null) {
@@ -73,9 +78,26 @@ public class ProcessExecutor extends Executor {
         return outputTable;
     }
 
+    public boolean safeArgs(Map args) {
+        if (args != null) {
+            String permittedCharRegex = "[a-zA-Z0-9\\.\\-_\\ ]*";
+            for (Object key : args.keySet()) {
+                if (key instanceof String && !((String) key).matches(permittedCharRegex)) {
+                    return false;
+                }
+            }
+            for (Object value : args.values()) {
+                if (value instanceof String && !((String) value).matches(permittedCharRegex)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public String[] cmdAppender(HashMap<Object, Object> arguments) {
         List<String> processList = new ArrayList<>();
-        processList.add(process);
+        processList.addAll(process);
         if (arguments != null) {
             if (fixedArgs != null) arguments.putAll(fixedArgs);
             for (Map.Entry<Object, Object> entry : arguments.entrySet()) {

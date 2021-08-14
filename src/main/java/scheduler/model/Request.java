@@ -31,6 +31,7 @@ public class Request {
     volatile Time completionTime;
     Boolean doCache = true;
     String cacheName;
+    String executorMessage;
 
     public String getSource() {
         return source;
@@ -94,6 +95,14 @@ public class Request {
 
     public void setCacheName(String cacheName) {
         this.cacheName = cacheName;
+    }
+
+    public String getExecutorMessage() {
+        return executorMessage;
+    }
+
+    public void setExecutorMessage(String executorMessage) {
+        this.executorMessage = executorMessage;
     }
 
     public enum Type{

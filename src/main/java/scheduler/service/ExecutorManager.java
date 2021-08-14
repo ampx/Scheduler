@@ -2,6 +2,7 @@ package scheduler.service;
 
 import scheduler.executors.*;
 
+import javax.naming.ConfigurationException;
 import java.util.*;
 
 public class ExecutorManager {
@@ -21,7 +22,7 @@ public class ExecutorManager {
 
     HashMap<String, Executor> jobs = new HashMap<>();
 
-    public boolean addExecutor(String executorName, String type, HashMap<String, Object> config){
+    public boolean addExecutor(String executorName, String type, HashMap<String, Object> config) throws ConfigurationException {
         Executor jobExecutor = createExecutor(type, config);
         if (jobExecutor != null) {
             jobs.put(executorName, jobExecutor);
@@ -38,7 +39,7 @@ public class ExecutorManager {
         return false;
     }
 
-    public Executor createExecutor(String type, HashMap<String, Object> config) {
+    public Executor createExecutor(String type, HashMap<String, Object> config) throws ConfigurationException {
         Executor newExecutor = null;
         if (externalExecutorManager != null) {
             newExecutor = externalExecutorManager.createExecutor(type, config);
