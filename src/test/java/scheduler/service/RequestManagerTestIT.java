@@ -256,5 +256,4 @@ class RequestManagerTestIT {
         assertTrue(executor_list.length >= 1);
         assertTrue(executor_list[0].equals("test"));
     }
-
 }
