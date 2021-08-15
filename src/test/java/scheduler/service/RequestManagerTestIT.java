@@ -250,7 +250,8 @@ class RequestManagerTestIT {
     @Test
     void testExecutorList()  {
         Search search = new Search();
-        String[] executor_list = restTemplate.postForObject(searchUrl, search, String[].class);
+        HttpEntity<Search> searchHttpEntity = new HttpEntity<>(search, getExecuteUserHeader());
+        String[] executor_list = restTemplate.postForObject(searchUrl, searchHttpEntity, String[].class);
 
         assertTrue(executor_list.length >= 1);
         assertTrue(executor_list[0].equals("test"));

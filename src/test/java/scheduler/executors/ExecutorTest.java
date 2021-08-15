@@ -13,7 +13,7 @@ class ExecutorTest {
     @Test
     void testSanitizeRequestArgs() throws JsonProcessingException, ConfigurationException {
         String argStr = "{\n" +
-                "  \"process\":\"python3\",\n" +
+                "  \"process\":[\"python3\"],\n" +
                 "  \"argSet\":[\"arg_name0\",\"arg_name1\"],\n" +
                 "  \"envVars\":[\"VALUE0=value0\",\"VALUE1=value1\"],\n" +
                 "  \"homeDir\":\"/path/to/home/dir\",\n" +
