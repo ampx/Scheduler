@@ -45,6 +45,7 @@ class SqliteTableSourceTest {
 
     @Test
     public void insertTableTest() {
+        //String tableName = "tableName";
         String tableName = "tableName";
         assertTrue(tableSource.insertTable(createTable(), tableName));
     }

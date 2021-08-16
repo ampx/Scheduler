@@ -5,6 +5,7 @@ import scheduler.service.RequestManager;
 import scheduler.util.table.model.Table;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class RequestMonitor extends Executor {
 
@@ -42,11 +43,19 @@ public class RequestMonitor extends Executor {
         Request originalRequest = requestManager.getSubmitRequest(user, source, label, target, args);
         if (originalRequest != null) {
             Table table = new Table(3);
-            table.setHeaders(new String[]{"Target", "Status", "Submit time"});
-            table.addRow(new String[]{originalRequest.getTarget(), originalRequest.getStatusString(),
-                    originalRequest.getRequestTime().mysqlString()});
+            table.setHeaders(new String[]{"Submit time", "Completion Time", "Status", "Notes"});
+            table.addRow(new String[]{originalRequest.getRequestTime().mysqlString(),
+                    originalRequest.getCompletionTime().mysqlString(),
+                    originalRequest.getStatusString(),
+                    originalRequest.getExecutorMessage()
+            });
             return table;
         }
         return null;
+    }
+
+    @Override
+    public HashMap sanitizeRequestArgs(HashMap<Object, Object> requestArgs) {
+        return requestArgs;
     }
 }

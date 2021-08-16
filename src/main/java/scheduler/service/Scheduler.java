@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public class Scheduler {
 
-    public void setJobManager(ExecutorManager executorManager) {
+    public void setExecutorManager(ExecutorManager executorManager) {
         this.executorManager = executorManager;
     }
 

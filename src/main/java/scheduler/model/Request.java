@@ -108,7 +108,8 @@ public class Request {
     public enum Type{
         RUN,
         SUBMIT,
-        GET
+        GET,
+        SYSTEM
     }
 
     public static Request createGetRequest(){
@@ -123,6 +124,10 @@ public class Request {
         return new Request(Type.RUN);
     }
 
+    public static Request createSystemRequest() {
+        return new Request(Type.SYSTEM);
+    }
+
     public Boolean isGetRequest() {
         if (type.equals(Type.GET)) return true;
         return false;
@@ -135,6 +140,11 @@ public class Request {
 
     public Boolean isSubmitRequest() {
         if (type.equals(Type.SUBMIT)) return true;
+        return false;
+    }
+
+    public Boolean isSystemRequest() {
+        if (type.equals(Type.SYSTEM)) return true;
         return false;
     }
 

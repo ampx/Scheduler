@@ -1,5 +1,6 @@
 package scheduler.service;
 
+import scheduler.logic.SystemObjectTableConverter;
 import scheduler.util.table.dao.TableSource;
 import scheduler.util.table.model.Table;
 import scheduler.util.time.model.Time;
@@ -19,7 +20,7 @@ public class RequestManager {
     //key=JobName, value Job details
     HashMap<String, List<Request>> requestHistory = new HashMap<>();
     HashMap<String, HashMap<String, List<Request>>> labelledRequestHistory = new HashMap();
-    String cacheTimestampPattern = "uuMMddHHmm";
+    String cacheTimestampPattern = "'d'uuMMddHHmm";
     Integer cacheTTLMins = 1440;
     Timer timer;
     String defaultUser = "*";
@@ -54,6 +55,21 @@ public class RequestManager {
     //StatsCollector statsCollector;
     TableSource cacheManager;
 
+    public Table addRequest(Request request) {
+        if (request != null) {
+            if (request.isGetRequest()) {
+                return getCachedResult(request);
+            } else if (request.isRunRequest()) {
+                return runJob(request);
+            } else if (request.isSubmitRequest()) {
+                submitJob(request);
+            } else if (request.isSystemRequest()) {
+                return systemRequest(request);
+            }
+        }
+        return null;
+    }
+
     public boolean submitJob(Request request){
         try {
             if (executorManager.jobExists(request.getTarget())
@@ -71,24 +87,11 @@ public class RequestManager {
         return false;
     }
 
-    public boolean deleteUserRequest(Request request){
-        /*HashMap<String, Object> options = scheduler.request.getOptions();
-        if (options.containsKey("delete")){
-            String userRequest
-        }*/
-        return false;
-    }
-
     //Find original submit scheduler.request
     //will return cached table if the submit scheduler.request has complete status and
     //cache result scheduler.request user has privilege to run original submit scheduler.request
     public Table getCachedResult(Request getRequest){
-        Request submitRequest = null;
-        if (getRequest.getLabel() != null && !getRequest.getLabel().equals(defaultLabel)) {
-            submitRequest = getUserSubmitRequest(getRequest.getSource(), getRequest.getUser(), getRequest.getLabel());
-        } else {
-            submitRequest = getSubmitRequest(getRequest.getTarget(), getRequest.getArgs());
-        }
+        Request submitRequest = getUserSubmitRequest(getRequest);
         if (submitRequest != null && submitRequest.isComplete()) {
             if (executorManager.jobExists(submitRequest.getTarget())
                     && executorManager.readPermission(getRequest.getUser(), submitRequest.getTarget())) {
@@ -112,27 +115,31 @@ public class RequestManager {
         return null;
     }
 
-    public Table systemRequest(Request request) {
-        /*Table response = null;
-        if (jobManager.processPermission(scheduler.request.getRequestUser(), "admin")) {
-            HashMap<String, Object> options = scheduler.request.getOptions();
-            if (scheduler.request.isRequestsRequest()) {
-                if (options.containsKey("top")) {
-                    List requests = getLongRunningRequest((Integer) options.get("top"));
-                    response = TableUtil.toTable(requests);
-                } else if (options.containsKey("status")) {
-                    List requests = getRequestsByStatus(Job.Status.valueOf((String) options.get("status")));
-                    response = TableUtil.toTable(requests);
-                }
-            } else if (scheduler.request.isMetricsRequest()) {
-                if (options.containsKey("metric_name")) {
-                    response = statsCollector.getStats((String) options.get("metric_name"));
-                } else {
-                    response = statsCollector.getStatsList();
+    public Table systemRequest(Request systemRequest) {
+        List<Request> requests = null;
+        if (systemRequest != null && (systemRequest.getTarget() != null || systemRequest.getLabel() != null)) {
+            Request submitRequest = getUserSubmitRequest(systemRequest);
+            if (submitRequest != null) {
+                if (executorManager.jobExists(submitRequest.getTarget())
+                        && executorManager.readPermission(systemRequest.getUser(), submitRequest.getTarget())) {
+                    requests = new ArrayList<>(1);
+                    requests.add(submitRequest);
                 }
             }
+        } else {
+            //add logic to get all submitted user requests
         }
-        return response;*/return null;
+        return SystemObjectTableConverter.makeStatusTable(requests);
+    }
+
+    public Request getUserSubmitRequest(Request getRequest) {
+        Request submitRequest = null;
+        if (getRequest.getLabel() != null && !getRequest.getLabel().equals(defaultLabel)) {
+            submitRequest = getUserSubmitRequest(getRequest.getSource(), getRequest.getUser(), getRequest.getLabel());
+        } else {
+            submitRequest = getSubmitRequest(getRequest.getTarget(), getRequest.getArgs());
+        }
+        return submitRequest;
     }
 
     public Set getUserRequestLabels(String user, String source, String tempLabel) {

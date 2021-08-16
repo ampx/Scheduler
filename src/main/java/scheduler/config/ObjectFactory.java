@@ -72,7 +72,7 @@ public class ObjectFactory {
     public Scheduler getScheduler(TableSource tableSource, ExecutorManager executorManager) throws ConfigurationException {
         Scheduler scheduler = new Scheduler();
         scheduler.setCacheManager(tableSource);
-        scheduler.setJobManager(executorManager);
+        scheduler.setExecutorManager(executorManager);
         return scheduler;
     }
 

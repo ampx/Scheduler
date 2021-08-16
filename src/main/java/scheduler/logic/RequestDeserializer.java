@@ -43,6 +43,8 @@ public class RequestDeserializer extends StdDeserializer<Request> {
                 request = Request.createSubmitRequest();
             } else if (type.equals("run")) {
                 request = Request.createRunRequest();
+            } else if (type.equals("system")) {
+                request = Request.createSystemRequest();
             } else {
                 return null;
             }
