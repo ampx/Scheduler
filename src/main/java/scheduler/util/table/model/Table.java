@@ -61,6 +61,25 @@ public class Table {
         }
         public ColumnType type = ColumnType.string;
         public String text;
+
+        public Boolean isNumeric() {
+            if (type.equals(ColumnType.number)) {
+                return true;
+            }
+            return false;
+        }
+        public Boolean isTime() {
+            if (type.equals(ColumnType.number)) {
+                return true;
+            }
+            return false;
+        }
+        public Boolean isString () {
+            if (type.equals(ColumnType.string)) {
+                return true;
+            }
+            return false;
+        }
     }
 
     public enum ColumnType {

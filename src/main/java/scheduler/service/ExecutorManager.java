@@ -41,15 +41,19 @@ public class ExecutorManager {
 
     public Executor createExecutor(String type, HashMap<String, Object> config) throws ConfigurationException {
         Executor newExecutor = null;
-        if (externalExecutorManager != null) {
-            newExecutor = externalExecutorManager.createExecutor(type, config);
-        }
-        if (newExecutor == null) {
-            if (type.equals("rest")) {
-                newExecutor = new UriExecutor(config);
-            } else if (type.equals("process")) {
-                newExecutor = new ProcessExecutor(config);
+        try {
+            if (externalExecutorManager != null) {
+                newExecutor = externalExecutorManager.createExecutor(type, config);
             }
+            if (newExecutor == null) {
+                if (type.equals("rest")) {
+                    newExecutor = new UriExecutor(config);
+                } else if (type.equals("process")) {
+                    newExecutor = new ProcessExecutor(config);
+                }
+            }
+        } catch (Exception e) {
+            return null;
         }
         return newExecutor;
     }
