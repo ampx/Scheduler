@@ -118,7 +118,7 @@ public class PreparedJdbcExecutor extends Executor{
         return table;
     }
 
-    private PreparedStatement prepareStatement(Connection connection, HashMap arguments) throws Exception{
+    protected PreparedStatement prepareStatement(Connection connection, HashMap arguments) throws Exception{
 
         PreparedStatement preparedStatement =
                 connection.prepareStatement(preparedSql);
