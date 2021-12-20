@@ -54,14 +54,6 @@ public class PreparedJdbcExecutor extends Executor{
         try {
             connection = DriverManager.getConnection(url, properties);
             preparedStatement = prepareStatement(connection, arguments);
-
-            Map paramsArg = (Map) arguments.get("params");
-            if (paramsArg != null) {
-                int i = 1;
-                for (Param entry: entries){
-                    preparedStatement.setObject(i++, paramsArg.get(entry.getName()));
-                }
-            }
         } catch (Exception e) {
             //setup issue
         }
