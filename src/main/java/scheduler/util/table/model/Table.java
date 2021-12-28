@@ -10,13 +10,12 @@ import java.util.List;
 public class Table {
     private Integer numColumns;
     public Column[] columns;
-    public List<Object[]> rows;
+    public List<Object[]> rows = new ArrayList<>();
     String type = "table";
 
     public Table(Integer numColumns){
         this.setNumColumns(numColumns);
         this.columns = new Column[numColumns];
-        rows = new ArrayList<>();
     }
 
     public Table() {
@@ -69,7 +68,7 @@ public class Table {
             return false;
         }
         public Boolean isTime() {
-            if (type.equals(ColumnType.number)) {
+            if (type.equals(ColumnType.time)) {
                 return true;
             }
             return false;

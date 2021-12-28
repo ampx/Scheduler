@@ -14,7 +14,7 @@ public class PreparedJdbcExecutor extends Executor{
     String preparedSql = null;
     List<Param> entries = new ArrayList<>();
     String url = null;
-    Properties properties = null;
+    Properties properties = new Properties();
 
     public PreparedJdbcExecutor(HashMap<String, Object> config) throws Exception {
         super(config);
@@ -32,7 +32,6 @@ public class PreparedJdbcExecutor extends Executor{
             throw new ConfigurationException();
         }
         if (config.containsKey("properties")) {
-            properties = new Properties();
             for (String propName: ((Map<String, Object>)config.get("properties")).keySet()) {
                 properties.put(propName, ((Map<String, Object>)config.get("properties")).get(propName));
             }
@@ -51,6 +50,9 @@ public class PreparedJdbcExecutor extends Executor{
         Table table = null;
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
+        if (arguments == null) {
+            arguments = new HashMap();
+        }
         try {
             connection = DriverManager.getConnection(url, properties);
             preparedStatement = prepareStatement(connection, arguments);
@@ -65,6 +67,7 @@ public class PreparedJdbcExecutor extends Executor{
             int columnCount = rsmd.getColumnCount();
             Table.Column[] headers = new Table.Column[columnCount];
             table = new Table();
+            table.columns = headers;
             for (int i = 1; i <= columnCount; i++) {
                 String name = rsmd.getColumnName(i);
                 Integer sqlType = rsmd.getColumnType(i);
@@ -81,7 +84,7 @@ public class PreparedJdbcExecutor extends Executor{
 
             while(result.next()) {
                 Object[] row = new Object[columnCount];
-                int thisColumn = 1;
+                int thisColumn = 0;
                 for (Table.Column column: table.getColumns()) {
                     if (column.isNumeric()) {
                         row[thisColumn++] = result.getDouble(column.text);
@@ -96,6 +99,7 @@ public class PreparedJdbcExecutor extends Executor{
 
             return table;
         } catch (Exception e) {
+            System.out.println(e);
             //processing results issues
         }
         try {

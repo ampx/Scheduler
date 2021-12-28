@@ -50,6 +50,10 @@ public class ExecutorManager {
                     newExecutor = new UriExecutor(config);
                 } else if (type.equals("process")) {
                     newExecutor = new ProcessExecutor(config);
+                } if (type.equals("jdbc")) {
+                    newExecutor = new PreparedJdbcExecutor(config);
+                } if (type.equals("raw_jdbc")) {
+                    newExecutor = new RawJdbcExecutor(config);
                 }
             }
         } catch (Exception e) {

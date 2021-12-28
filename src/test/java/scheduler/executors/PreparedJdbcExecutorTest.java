@@ -1,7 +1,11 @@
 package scheduler.executors;
 
 import org.junit.jupiter.api.Test;
+import scheduler.util.table.model.Table;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -13,16 +17,40 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PreparedJdbcExecutorTest {
 
-    String url = "jdbc:sqlite:./jdbcExecutorTest.db";
+    String filepath = "./jdbcExecutorTest.db";
+    String url = "jdbc:sqlite:" + filepath;
 
     @Test
     public void preparedJdbcExecutorTest() throws Exception {
         HashMap args = new HashMap();
         args.put("url", url);
         //args.put("properties", new HashMap() {{put();}});
-        args.put("preparedSql", "");
+        prepareSqlite();
+        prepareSourceJdbcData();
+        args.put("preparedSql", "select * from " + tableName);
         PreparedJdbcExecutor executor = new PreparedJdbcExecutor(args);
+        Table tableResult = executor.execute(null, null);
+        assertTrue(tableResult.getRows().size() == 2);
+        Object[] row = tableResult.getRows().get(0);
+        for (int i = 0; i < tableResult.getColumns().length; i++) {
+            String fieldName = tableResult.getColumns()[i].text;
+            if (table.get(fieldName) instanceof Number) {
+                assertTrue(Double.compare(((Number)table.get(fieldName)).doubleValue(),
+                        (Double)row[i])==0);
+            } else {
+                assertTrue(table.get(fieldName).equals(row[i]));
+            }
+        }
+    }
 
+    public void prepareSqlite() {
+        try {
+            if (Files.exists(Paths.get(filepath))) {
+                Files.delete(Paths.get(filepath ));
+            }
+        } catch (IOException e) {
+
+        }
     }
 
     public void prepareSourceJdbcData() throws Exception{
@@ -32,8 +60,9 @@ class PreparedJdbcExecutorTest {
         table.put("numeric_long", new Long(3));
         table.put("numeric_float", new Float(4));
         table.put("numeric_double", new Double(5));
-        table.put("date_date", "2021-12-19");
-        table.put("date_datetime", "2021-12-19 12:02:59");
+        //removing test for date types because sqlite does not support date types properly
+        //table.put("date_date", "2021-12-19");
+        //table.put("date_datetime", "2021-12-19 12:02:59");
         table.put("text_varchar", "varchar");
         table.put("text_text", "text");
 
@@ -44,8 +73,8 @@ class PreparedJdbcExecutorTest {
                 "numeric_long BIGINT," +
                 "numeric_float FLOAT," +
                 "numeric_double DOUBLE," +
-                "date_date DATE," +
-                "date_datetime DATETIME," +
+                //"date_date DATE," +
+                //"date_datetime DATETIME," +
                 "text_varchar VARCHAR(256)," +
                 "text_text TEXT" +
                 ");";
@@ -56,11 +85,11 @@ class PreparedJdbcExecutorTest {
         for (String key : (Set<String>)table.keySet()) {
             if (first) {
                 insertKeysStr += key;
-                insertValuesStr += table.get(key);
+                insertValuesStr += "'" + table.get(key) + "'";
                 first = false;
             } else {
                 insertKeysStr += "," + key;
-                insertValuesStr += "," + table.get(key);
+                insertValuesStr += ",'" + table.get(key) + "'";
             }
         }
 
